@@ -1,0 +1,127 @@
+---
+title: "Mappeoppgave_1"
+format: html
+editor: visual
+---
+
+\# SOK-1006 V23
+
+\## Mappeoppgave 1 - Samfunnsøkonomisk analyse av en turistskatt
+
+\## Teller 50% av karakteren i faget.
+
+\### Innleveringsfrist fredag 24. mars 2023 kl 13.00 i Wiseflow
+
+\### 1. Bakgrunn
+
+I januar 2023 kunngjorde Nærings- og fiskeridepartementet at \[Regjeringen vil gi kommuner mulighet til å innføre besøksbidrag\](https://www.regjeringen.no/no/aktuelt/vurderer-destinasjoner-for-besoksbidrag/id2959885/?expand=factbox2959954). En mulig utforming av et besøksbidrag er i form av en turistskatt som overnattingssteder må kreve inn av besøkende per overnatting. Du er bedt om å skrive en utredning om de samfunnsøkonomiske konsekvenser av å innføre en slik turistskatt. Utredningen skal skrives på et slikt nivå at det er lett forståelig for næringsminister Jan Christian Vestre. (Han er utdannet jurist). Alle faguttrykk må forklares på en intuitiv måte, og figurer/tabeller må ha presise og gode forklaringer. Et godt eksempel på en slik utredning om et annet tema er \[Utredning av utvalgte tiltak i det norske kraftmarkedet\](https://www.regjeringen.no/contentassets/0f626d2e10ef48e591d2ceefce3546dc/afry_menon_oed_endelig-rapport.pdf) skrevet av AFRY og Menon til Olje- og Energidepartementet i september 2022. (Dette har vi brukt i forbindelse med forelesning 5).
+
+\### 2. Instruksjoner og oppgaver
+
+Mappeoppgaven besvares individuelt. Det er ikke tillatt å samarbeide med andre om utvikling av tekst og kode. Kode som du henter fra andre kilder må siteres - se \[MIT retningslinjer\](https://integrity.mit.edu/handbook/writing-code) som gir en god pekepinn. Det er ikke lov å bruke KI tjenester som ChatGPT til å skrive tekst eller kode.
+
+Dere skal levere to ting i Wiseflow:
+
+\- en GitHub lenke til en Jupyter notatblokk (eller annen kildefil) som inneholder både Python-kode og tekst
+
+\- en PDF eller HTML fil av Jupyter notatblokken
+
+Husk å merke alle filene med ditt kandidatnummer.
+
+Din utredning skal inneholde følgende elementer:
+
+\*Kapittel 1 - Innledning\*
+
+Gi litt bakgrunn i dette kapitlet.
+
+Du vil muligens komme inn på følgende:
+
+\- Hva menes med en turistskatt på overnattinger?
+
+\- Hva er begrunnelsen for dens innføring?
+
+\- Hvor utbredt er dette tiltaket i andre land/byer?
+
+\- Hvilke erfaringer har man gjort med en turistskatt?
+
+Til slutt vil kapitlet forteller leseren om utredningens struktur.
+
+\*Kapittel 2 - Turistnæringen i Norge\*
+
+Her gir du leseren et overblikk over markedet som du skal analysere. Om du vil kan du begrense deg til Nord-Norge. Finn data som du laster ned og bruker til å tegne figurer for å gi en indikasjon på størrelsen og viktigheten på dette markedet. For eksempel:
+
+\- Hvordan har antall hotellovernattinger utviklet seg over tid?
+
+\- Når på året kommer turister?
+
+\- Hva er fordelingen av turister som ankommer via skip (cruise) og med fly, evt andre fremkomstmidler?
+
+\- Hvordan er hotelløkonomien?
+
+\- Hvor utbredt er private overnattinger gjennom Airbnb og andre plattformer?
+
+\- Hvorfor kan disse momentene være viktig for din analyse?
+
+\*\*Data\*\*
+
+For at analysen din skal være mulig å replisere (dvs at jeg kan kjøre din analyse i en notatblokk) er det viktig at du ikke henter data- og bildefiler fra din egen PC. Jeg vil helst at dere laster data direkte fra nett ved hjelp av et API. Dere har brukt API-er i SOK-1004 mot SSB sine databaser. Dette er også mulig å gjøre i Python selvsagt, og SSB har laget en utmerket \[veiledning\](https://github.com/janbrus/ssb-api-python-examples/blob/master/jsonstatToPandas_funksjon.ipynb). Jeg har oppsummert dette i en Jupyter notatblokk som heter \`api.ipynb\` i mitt repo for dette kurset.
+
+\*\*Datakilder\*\*
+
+SSB lager et \[satellittregnskap for turisme\](https://www.ssb.no/nasjonalregnskap-og-konjunkturer/nasjonalregnskap/statistikk/satellittregnskap-for-turisme) som måler betydningen av reiselivet for norsk økonomi. Her vil dere finne det aller meste. \[Kunnskapsbanken\](https://telleren.kbnn.no/) har noen tall på reiseliv for Nord-Norge, inkludert Airbnb.
+
+\*\*Ett eksempel\*\* på hvordan man \*kan\* beskrive turisme er "Tourism in the Arctic", Derek J. Clark, Mikko Moilanen, Stein Østbye, kapittel 7 i \[The Economy of the North - ECONOR 2020\](https://www.ssb.no/en/natur-og-miljo/artikler-og-publikasjoner/\_attachment/454081?\_ts=17bc94cfc98), SSB.
+
+\*Kapittel 3 - Samfunnsøkonomiske effekter av en turistskatt\*
+
+I dette kapitlet gjennomfører du analysen. Du kan vurdere å ta med følgende elementer:
+
+\- Hva er formålet med å innføre en turistskatt på overnattinger?
+
+\- Hvordan fungerer markedet for overnattinger uten en skatt?
+
+\- Hvilke endringer forventer vi etter at skatten blir innført?
+
+\- Hvilke effektivitets- og fordelingseffekter har dette tiltaket?
+
+\- Hvor store effekter forventer vi, og hva er dette avhengig av?
+
+\- Finnes det noen estimat på sentrale parameter (for eksempel priselastisiteten på etterspørsel etter overnattinger) som vi kan bruke for å konkretisere analysen?
+
+\- En vurdering av hvorvidt formålet med tiltaket oppfylles.
+
+I kurset så langt har vi brukt ulike varianter av markedskrysset for å analysere forskjellige markeder, og dette blir verktøyet som brukes her også. Husk å gi en god forklaring av alle figurer som du lager i forbindelse med analysen. Dere har alt dere trenger! (Om du vil gå noe utover det som vi har snakket om i kurset så langt kan det være en idé å se på kapittel 13 i læreboka om "eksterne virkninger").
+
+\*Kapittel 4 - Konklusjon\*
+
+Her oppsummerer du kort dinne funn fra analysen, og råd til Nærings- og fiskeridepartementet.
+
+\### 3. Bedømmelse
+
+Formålet med oppgaven er å gi dere trening i å
+
+\- skrive godt og tydelig
+
+\- anvende data og lage figurer ved hjelp av Python-kode
+
+\- operasjonalisere mikroøkonomiske begrep og teori i en analyse
+
+Oppgaven bedømmes ut fra følgende kriterier:
+
+1\. evne til å gi kortfattede og presise definisjoner av grunnbegreper i mikroøkonomi
+
+2\. evne til å anvende mikroøkonomiske begrep og bruke disse til å analysere et marked
+
+3\. evne til å skrive konsist og presist for folk som ikke nødvendigvis er økonomer
+
+4\. at utredningen har god struktur, analysen henger sammen og at det går en rød tråd gjennom den
+
+5\. at forklaringene til figurene er presise og gode
+
+6\. at Python-koden dere bruker til å løse oppgaven er oversiktlig og godt dokumentert
+
+\### 4. Tilbakemelding underveis
+
+Dere vil få anledning til å levere et utkast av arbeidet til Derek én gang og få tilbakemelding. Utkastet sendes per e-post (\[derek.clark\\\@uit.no\](mailto:derek.clark\@uit.no)) innen fredag 10. mars klokken 16.00. Besvarelser som sendes etter fristen blir ikke kommentert. NB. Derek tar ferie i uke 10 (6.-10.3).
+
+Lykke til!
