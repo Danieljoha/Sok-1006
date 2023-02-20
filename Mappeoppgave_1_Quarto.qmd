@@ -125,3 +125,9 @@ Oppgaven bedømmes ut fra følgende kriterier:
 Dere vil få anledning til å levere et utkast av arbeidet til Derek én gang og få tilbakemelding. Utkastet sendes per e-post (\[derek.clark\\\@uit.no\](mailto:derek.clark\@uit.no)) innen fredag 10. mars klokken 16.00. Besvarelser som sendes etter fristen blir ikke kommentert. NB. Derek tar ferie i uke 10 (6.-10.3).
 
 Lykke til!
+
+```{python}
+
+```
+
+
