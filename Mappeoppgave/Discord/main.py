@@ -23,7 +23,7 @@ last_match = None  # Initialize last_match to None to indicate that no matching 
 async def post_new_row(row):
     # Define a function to post the new row to Discord
     channel = bot.get_channel(1065637170708222052)  # ID of the Discord channel where it posts
-    await channel.send(f"God dag god dag studentan \nNy oppgave i Sok-1005:\n{row}")
+    await channel.send(f"God dag god dag studentan \nNy oppgave i Sok-1005! Skriv !check \n\nKindly")
 
 async def check_course_plan():
     global last_match  # Access the global last_match variable
@@ -71,8 +71,11 @@ async def check_course_plan():
 
 async def periodic_check():
     while True:
+        print('Checking course plan...')
         await check_course_plan() # Wait for the result of check_course_plan()
         await asyncio.sleep(60 * 5)  # Wait for 5 minutes before checking again
+  
+        
 
 # Start the periodic check loop asynchronously
 async def start_periodic_check():
@@ -85,11 +88,60 @@ async def check_command(ctx):
     print('Received check command from', ctx.author.name)
     result = await check_course_plan()  # Await the result of check_course_plan()
     if result:
-        await ctx.send(f"God dag god dag studentan \nNy oppgave i Sok-1005:\n{result}")
+        await ctx.send(f"God dag god dag studentan \n\nNy oppgave i Sok-1005:\n{result}\n\nKindly")
     else:
         # Check if the last_match variable has been set to a non-None value
         if last_match is not None:
-            await ctx.send("Ikke noe nytt arbeid.")
+            await ctx.send("God dag, God dag studentan \n\n Ikke noe nytt arbeid.\n\nKindly")
+
+@bot.command(name='kindly')
+async def help_command(ctx):
+    print('Received kindly command from', ctx.author.name)
+    await ctx.send("God dag, God dag studentan \n\nSjekk nettsiden selv da.\n\nKindly")
+
+
+@bot.command(name="repeat")
+async def repeat_command(ctx):
+    print('recieved repeat command from', ctx.author.name)
+    await ctx.send("God dag, God dag studentan \n\n fuck off \n\nKindly".format(ctx.author.id))
+
+@bot.command(name="fuckdeg")
+async def fuckdeg_command(ctx):
+    print('recieved repeat command from', ctx.author.name)
+    await ctx.send("nei du \n\nKindly")
+
+@bot.command(name="kysbot")
+async def kysbot_command(ctx):
+    print('recieved repeat command from', ctx.author.name)
+    await ctx.send("Slem gutt\n\nKindly")
+
+@bot.command(name="shitbot")
+async def shitbot_command(ctx):
+    print('recieved repeat command from', ctx.author.name)
+    await ctx.send("Ny syns jeg dere er slem\n\nKindly")
+
+
+@bot.command(name="fuckyouup")
+async def fuckyouup_command(ctx):
+    print('recieved repeat command from', ctx.author.name)
+    await ctx.send("Gå å jobb med mappeoppgaven. jævla latkuk.\n\n\nKindly")
+
+
+@bot.command(name='ping')
+async def ping_command(ctx, user: discord.Member):
+    print('Received ping command from', ctx.author.name)
+    await ctx.send(f'{user.mention}, Get pinged bitch \n\n\nKindly.')
+
+
+@bot.command(name="source")
+async def source_command(ctx):
+    print('received source command from', ctx.author.name)
+    embed = discord.Embed(title="Koden til botten ligger på repoet dere sikkert allerede sjekker daglig",
+                          url="https://github.com/Danieljoha/Sok-1006/tree/main/Mappeoppgave/Discord",
+                          description="Kom å stjel koden min jævla kuka",
+                          color=discord.Color.blue())
+    embed.set_thumbnail(url="https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831")
+    await ctx.send(embed=embed)
 
 
 # Run the Discord bot using the token from the environment variable
