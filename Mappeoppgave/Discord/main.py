@@ -136,11 +136,13 @@ async def ping_command(ctx, user: discord.Member):
 @bot.command(name="source")
 async def source_command(ctx):
     print('received source command from', ctx.author.name)
+    gif_url = "https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831"
     embed = discord.Embed(title="Koden til botten ligger på repoet dere sikkert allerede sjekker daglig",
                           url="https://github.com/Danieljoha/Sok-1006/tree/main/Mappeoppgave/Discord",
                           description="Kom å stjel koden min jævla kuka",
                           color=discord.Color.blue())
-    embed.set_thumbnail(url="https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831")
+    embed.set_thumbnail(url=gif_url)
+    await ctx.send(gif_url)
     await ctx.send(embed=embed)
 
 
