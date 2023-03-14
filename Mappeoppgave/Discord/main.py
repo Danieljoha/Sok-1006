@@ -57,7 +57,7 @@ async def check_course_plan():
     latest_match = None
     for row in rows:
         if any("task" in value.lower() or "assignment" in value.lower() or "deadline" in value.lower() for value in row.values()):
-            latest_match = f"{row['Date']} {row['Session']} \n\n\n\n {row['Topics/Resources']}"
+            latest_match = f"{row['Date']} {row['Session']}\n\n {row['Topics/Resources']}"
 
 
     if latest_match and latest_match != last_match:
@@ -89,7 +89,7 @@ async def check_command(ctx):
     print('Received check command from', ctx.author.name)
     result = await check_course_plan()  # Await the result of check_course_plan()
     if result:
-        await ctx.send(f"God dag god dag studentan \n\nNy oppgave i Sok-1005:\n{result}\n\nKindly")
+        await ctx.send(f"God dag god dag studentan \n\nNy oppgave i Sok-1005:\n\n{result}\n\nKindly")
     else:
         # Check if the last_match variable has been set to a non-None value
         if last_match is not None:
