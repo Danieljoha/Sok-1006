@@ -57,7 +57,8 @@ async def check_course_plan():
     latest_match = None
     for row in rows:
         if any("task" in value.lower() or "assignment" in value.lower() or "deadline" in value.lower() for value in row.values()):
-            latest_match = f"{row['Date']} {row['Session']} {row['Topics/Resources']}"
+            latest_match = f"{row['Date']} {row['Session']} \n\n\n\n {row['Topics/Resources']}"
+
 
     if latest_match and latest_match != last_match:
         # If a new matching row has been found, and it is different from the last known matching row,
