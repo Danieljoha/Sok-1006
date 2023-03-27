@@ -1,0 +1,2277 @@
+---
+title: "Mappeoppgave 1 - Samfunnsøkonomisk analyse av en turistskatt"
+subtitle: "Fakultet for biovitenskap, fiskeri og økonomi."
+author: "Kandidatnummer 3, SOK-1006 Høst 2023"
+date: last-modified 
+date-format: "DD-MM-YYYY"
+editor: visual
+toc: true
+toc-title: "Innholdsfortegnelse."
+abstract: | 
+    | 
+    | Norge har opplevd en jevn vekst i turismen de siste årene. Denne veksten har bidratt til økt verdiskapning og skapt nye arbeidsplasser som innen hotell- og byggebransjen. En viktig faktor i denne økningen var svekkelsen av den norske kronen som startet i 2013, som gjorde det billigere for utenlandske turister å besøke Norge. Figurene i rapporten viser en korrelasjon mellom kronekurs og turisme, spesielt under perioden 2013-2016.
+    | 
+    | Turistskatt kan bidra til å finansiere offentlige tjenester og forbedre tilbud for både bosatte og turister, samtidig som det hjelper med å vedlikeholde naturområder som blir slitt av turisme. Redusert turisme kan også være et mål for å lette belastningen på populære destinasjoner. Hotellmarkedet vil bli påvirket av turistskatten, og turistenes etterspørsel er funnet å være prisfølsom. En turistskatt kan dermed føre til redusert antall turister, men også generere betydelige inntekter som kan brukes til å dekke kostnadene turismen medfører. 
+    | 
+    | I Nord-Norge kan en turistskatt bidra til å dempe økningen i turisme og redusere antallet turister per år. Dette vil imidlertid også påvirke sysselsettingen i turistnæringen. For å minimere de negative effektene av turismen, bør det settes en turistskatt på høysesongen fra juni til september. 
+    | 
+    | 
+    | 
+    | 
+    | 
+    | 
+    | 
+    | 
+    | 
+format: 
+  pdf:
+    geometry:
+      - top=20mm
+      - left=20mm
+      - heightrounded
+    lof: true
+    fontsize: 12pt
+    documentclass: scrartcl
+    papersize: a4
+echo: false
+crossref: 
+  lof-title: "Figurliste"
+  fig-title: "Figur"
+header-includes:
+  - \usepackage{wrapfig}
+---
+
+```{python, warning=false, message=false}
+#henter noen pakker
+
+#Koden i dette dokumentet vil ikke kunne kjøres på forventet måte uten å fjerne ting som %%capture som er lagt i mange kodeblokker. Denne kommandoen er lagt til for å fortelle Jupyter engine som kjører python koden at den ikke skal putte plotsene der kodeblokkene er. Denne koden kjøres ved å trykke "Render"
+import json
+import pandas as pd
+import requests
+from pyjstat import pyjstat
+import calendar
+from matplotlib import pyplot as plt
+import numpy as np
+import sympy as sp
+
+import matplotlib.ticker as mtick
+
+#import locale
+#locale.setlocale(locale.LC_ALL, 'no_NO.utf8')  #denne må kjøres om du får en feilmelding om "mened" eller slikt der den ikke klarer å lese norske bokstaver.
+```
+
+```{python}
+%%capture  
+
+#Henter data for overnattinger 2022 
+
+postUrl = "https://data.ssb.no/api/v0/no/table/13152/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "vs:Fylker2020",
+        "values": [
+          "18",
+          "54"
+        ]
+      }
+    },
+    {
+      "code": "InnKvartering1",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "01"
+        ]
+      }
+    },
+    {
+      "code": "Landkoder2",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "ccc",
+          "101",
+          "103",
+          "105",
+          "106",
+          "111",
+          "114",
+          "120",
+          "112",
+          "155",
+          "113",
+          "115",
+          "117",
+          "119",
+          "121",
+          "123",
+          "161",
+          "122",
+          "124",
+          "128",
+          "136",
+          "129",
+          "156",
+          "126",
+          "138",
+          "130",
+          "160",
+          "127",
+          "131",
+          "132",
+          "133",
+          "140",
+          "134",
+          "159",
+          "157",
+          "146",
+          "139",
+          "137",
+          "141",
+          "158",
+          "143",
+          "144",
+          "148",
+          "152",
+          "153",
+          "154",
+          "196",
+          "359",
+          "426",
+          "444",
+          "448",
+          "460",
+          "512",
+          "540",
+          "548",
+          "432",
+          "568",
+          "464",
+          "484",
+          "492",
+          "500",
+          "612",
+          "652",
+          "684",
+          "715",
+          "805",
+          "796",
+          "896",
+          "596",
+          "596_2017",
+          "396"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2016M01",
+          "2016M02",
+          "2016M03",
+          "2016M04",
+          "2016M05",
+          "2016M06",
+          "2016M07",
+          "2016M08",
+          "2016M09",
+          "2016M10",
+          "2016M11",
+          "2016M12",
+          "2017M01",
+          "2017M02",
+          "2017M03",
+          "2017M04",
+          "2017M05",
+          "2017M06",
+          "2017M07",
+          "2017M08",
+          "2017M09",
+          "2017M10",
+          "2017M11",
+          "2017M12",
+          "2018M01",
+          "2018M02",
+          "2018M03",
+          "2018M04",
+          "2018M05",
+          "2018M06",
+          "2018M07",
+          "2018M08",
+          "2018M09",
+          "2018M10",
+          "2018M11",
+          "2018M12",
+          "2019M01",
+          "2019M02",
+          "2019M03",
+          "2019M04",
+          "2019M05",
+          "2019M06",
+          "2019M07",
+          "2019M08",
+          "2019M09",
+          "2019M10",
+          "2019M11",
+          "2019M12",
+          "2020M01",
+          "2020M02",
+          "2020M03",
+          "2020M04",
+          "2020M05",
+          "2020M06",
+          "2020M07",
+          "2020M08",
+          "2020M09",
+          "2020M10",
+          "2020M11",
+          "2020M12",
+          "2021M01",
+          "2021M02",
+          "2021M03",
+          "2021M04",
+          "2021M05",
+          "2021M06",
+          "2021M07",
+          "2021M08",
+          "2021M09",
+          "2021M10",
+          "2021M11",
+          "2021M12",
+          "2022M01",
+          "2022M02",
+          "2022M03",
+          "2022M04",
+          "2022M05",
+          "2022M06",
+          "2022M07",
+          "2022M08",
+          "2022M09",
+          "2022M10",
+          "2022M11",
+          "2022M12"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+} 
+
+# Funksjon for å konvertere uttrekket til 2 dataframes, tar 2 paramtre
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_13152, df_id, ds = apiToDataframe(postUrl, apiQuery)
+
+df_13152['region'] = df_13152['region'].str.replace('Nordland - Nordlánnda', 'Nordland')
+df_13152['region'] = df_13152['region'].str.replace('Troms og Finnmark - Romsa ja Finnmárku', 'Troms og Finnmark')
+
+#I drop column 2 and 3
+df_13152 = df_13152.drop(df_13152.columns[[1, 3]], axis=1)
+df_13152 = df_13152.set_index('måned')
+
+
+
+df_fordeling = df_13152
+
+
+
+df_fordeling['year'] = df_fordeling.index.get_level_values(0).str[:4]
+df_fordeling = df_fordeling.set_index('year')
+df_fordeling = df_fordeling.replace(np.nan, 0)
+#I combine all values for nordland and troms og finnmark and group by index and bustadland
+df_fordeling = df_fordeling.groupby(['year', 'bustadland']).sum(numeric_only=True)
+
+#I pivot the table
+df_fordeling = df_fordeling.pivot_table(index='year', columns='bustadland', values='value')
+
+df_utlandet = df_fordeling['Utlandet i alt']
+df_utlandet = df_utlandet.astype(int)
+df_utlandet = pd.DataFrame(df_utlandet)
+
+
+df_13152 = df_13152[df_13152['bustadland'] == 'Utlandet i alt']
+#I filter for only 2022
+df_13152 = df_13152[df_13152.index.str.contains('2022')]
+
+
+
+#I create a list of countries in europe
+europa = ['Albania', 'Andorra', 'Østerrike', 'Belarus', 'Belgia', 'Bosnia-Hercegovina', 'Bulgaria', 
+            'Kroatia', 'Kypros', 'Tsjekkia', 'Danmark', 'Estland', 'Finland', 'Frankrike', 'Tyskland', 
+            'Hellas', 'Ungarn', 'Island', 'Irland', 'Italia', 'Kosovo', 'Latvia', 'Liechtenstein', 'Litauen', 
+            'Luxembourg', 'Nord-Makedonia', 'Malta', 'Moldova', 'Monaco', 'Montenegro', 'Nederland',
+            'Polen', 'Portugal', 'Romania', 'Russland', 'San Marino', 'Serbia', 'Slovakia', 'Slovenia', 
+            'Spania', 'Sverige', 'Sveits', 'Tyrkia', 'Ukraina', 'Storbritannia', 'Vatikanstaten', 'Resten av Europa'] 
+#i take all columns that are in the list of countries in europe and sum them
+df_fordeling['Europa'] = df_fordeling[europa].sum(axis=1)
+#I drop all columns that are in the list of countries in europe
+df_fordeling = df_fordeling.drop(europa, axis=1)
+
+#i combine canada and usa
+df_fordeling['USA og Canada'] = df_fordeling['USA'] + df_fordeling['Canada']
+#i drop canada and usa
+df_fordeling = df_fordeling.drop(['USA', 'Canada'], axis=1)
+
+#I combine oseania and australia
+df_fordeling['Oseania'] = df_fordeling['Australia'] + df_fordeling['Resten av Oseania']
+#I drop australia and oseania
+df_fordeling = df_fordeling.drop(['Australia', 'Resten av Oseania'], axis=1)
+
+#Andre land
+df_fordeling['Resten av verden/Uoppgitt'] = df_fordeling['Brasil'] + df_fordeling['De forente arabiske emirater'] + df_fordeling['Israel'] + df_fordeling['Sør-Afrika'] + df_fordeling['Mexico']
+#and drop the columns
+
+#I add together Asia
+df_fordeling['Resten av Asia'] = df_fordeling['Indonesia'] + df_fordeling['India'] + df_fordeling['Malaysia'] + df_fordeling['Resten av Asia'] + df_fordeling['Resten av Asia -2017'] + df_fordeling['Qatar'] + df_fordeling['Taiwan'] + df_fordeling['Thailand'] + df_fordeling['Singapore'] + df_fordeling['Sør-Korea'] + df_fordeling['Resten av Afrika'] + df_fordeling['Resten av Sør-Amerika']
+#and drop the columns
+df_fordeling = df_fordeling.drop(['Indonesia', 'India', 'Malaysia', 'Resten av Asia', 'Resten av Asia -2017', 'Qatar', 'Taiwan', 'Thailand', 'Singapore', 'Sør-Korea', 'Resten av Afrika', 'Resten av Sør-Amerika'], axis=1)
+
+df_fordeling = df_fordeling.drop(['Brasil', 'De forente arabiske emirater', 'Israel', 'Sør-Afrika', 'Mexico'], axis=1)
+
+
+
+# I make an ax plot with a bar plot
+fig, ax = plt.subplots(figsize=(10, 4))
+# I now make a stacked bar plot
+ax.bar(df_utlandet.index, df_utlandet['Utlandet i alt'], label='Utlandet i alt', color='green')
+ax.bar(df_fordeling.index, df_fordeling['Europa'], label='Europa', color="#0C84A6")
+# I write the percentage of Europa in the bar
+for i in range(len(df_fordeling)):
+    ax.text(i, df_fordeling['Europa'][i]/2, str(round(df_fordeling['Europa'][i]/df_utlandet['Utlandet i alt'][i]*100, 1)) + '%', ha='center', va='center', color='white')
+
+ax.bar(df_fordeling.index, df_fordeling['USA og Canada'], bottom=df_fordeling['Europa'], label='USA og Canada', color="#6F4E7B")
+# I write the percentage for USA og Canada in the bar
+for i in range(len(df_fordeling)):
+    ax.text(i, df_fordeling['Europa'][i] + df_fordeling['USA og Canada'][i]/2, str(round(df_fordeling['USA og Canada'][i]/df_utlandet['Utlandet i alt'][i]*100, 1)) + '%', ha='center', va='center', color='white')
+
+ax.bar(df_fordeling.index, df_fordeling['Oseania'], bottom=df_fordeling['Europa'] + df_fordeling['USA og Canada'], label='Oseania', color="#FFA056")
+
+
+ax.bar(df_fordeling.index, df_fordeling['Kina'], bottom=df_fordeling['Europa'] + df_fordeling['USA og Canada'] + df_fordeling['Oseania'], label='Kina', color="#C6492B")
+
+# I write the percentage for Kina in the bar
+for i in range(len(df_fordeling)-3):
+    ax.text(i, df_fordeling['Europa'][i] + df_fordeling['USA og Canada'][i] + df_fordeling['Oseania'][i] + df_fordeling['Kina'][i]/2, str(round(df_fordeling['Kina'][i]/df_utlandet['Utlandet i alt'][i]*100, 1)) + '%', ha='center', va='center', color='white')
+
+#legend
+ax.text(0.9, -0.1, 'Kilde: SSB tabell 13152', ha='center', va='center', transform=ax.transAxes, fontsize=8)
+
+# I add a legend
+ax.legend(loc='center', bbox_to_anchor=(0.7, 0.7))
+
+# I add a title
+ax.set_title('Årlige overnattinger i fra utlendinger Nord-Norge', fontsize=15)
+
+plt.savefig('fordeling_overnattinger.png', dpi=500, bbox_inches='tight')
+#Ikke se for nøye på koden her haha. jeg la aldri til japan osv igjen hvis man prøver å regne opp prosentan så dersom man prøver å regne inn forskjellen på alle de kolonnene og "utlandet i alt" så teller den ikke med mange land når den gjør den regningen. Har fjernet dette fra koden av hensyn til tid så det er ikke rest prosent på søylene.
+
+
+#I drop the last column
+df_13152 = df_13152.drop('year', axis=1)
+
+df_13152 = df_13152.pivot(columns=['region', 'bustadland'], values='value')
+
+#I add together column 1 and 3 and add it to a new column
+df_13152['Utenlandske turister'] = df_13152.iloc[:, 0] + df_13152.iloc[:, 1]
+
+#and i drop the first 2 columns
+df_13152 = df_13152.drop(df_13152.columns[[0, 1]], axis=1)
+
+#I remove everything before M in the index
+df_13152.index = df_13152.index.str.replace('2022M', '')
+
+# define function to map month numbers to month names
+def month_name(num):
+    return calendar.month_name[num]
+
+#i convert the index to int
+df_13152.index = df_13152.index.astype(int)
+
+
+#I add a new column with the index values
+df_13152['month'] = df_13152.index
+df_13152['month_name'] = df_13152['month'].apply(month_name)
+
+
+#I convert the index to radians
+df_13152['radians'] = df_13152['month'] * (2 * np.pi / 12)
+
+#I drop the month column
+df_13152 = df_13152.drop(df_13152.columns[[1]], axis=1)
+
+
+
+```
+
+```{python}
+%%capture 
+# Create a circular plot
+fig = plt.figure(figsize=(4, 4))
+ax = fig.add_subplot(111, projection='polar', theta_direction=-1)
+
+bars = ax.bar(df_13152['radians'], df_13152['Utenlandske turister'], width=np.radians(30), edgecolor='k', linewidth=1)
+
+# Remove the frame and spines of the polar plot
+ax.patch.set_visible(False)
+
+# Set the title and axis labels
+ax.set_title('Overnattinger fra utlendinger i Nord Norge', fontsize=14, y=1.1)
+ax.set_rlabel_position(15)
+ax.set_theta_zero_location('N')
+
+#I offset the theta to make january start at the top
+ax.set_theta_offset(np.radians(105))
+
+# Set the positions and labels for the ticks
+ticks = np.linspace(0, 2 * np.pi, 12, endpoint=False)
+ticklabels = df_13152['month_name']
+ax.set_xticks(ticks + np.radians(15))
+ax.set_xticklabels(ticklabels)
+
+# Moving the tick labels further away from the plot
+ax.xaxis.set_tick_params(pad=11) 
+
+# Set the color of the bars based on visitors
+colors = plt.cm.viridis(df_13152['Utenlandske turister'] / max(df_13152['Utenlandske turister']))
+for i, bar in enumerate(bars):
+    bar.set_facecolor(colors[i])
+
+plt.savefig('polar_utlendinger.png', dpi=500, bbox_inches='tight');
+```
+
+```{python}
+%%capture 
+postUrl = "https://data.ssb.no/api/v0/no/table/10638/"
+apiQuery = {
+  "query": [
+    {
+      "code": "KonsumInnd",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "UTLK"
+        ]
+      }
+    },
+    {
+      "code": "Reiseliv",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "0"
+        ]
+      }
+    },
+    {
+      "code": "ContentsCode",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "FastePriser"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2010",
+          "2011",
+          "2012",
+          "2013",
+          "2014",
+          "2015",
+          "2016",
+          "2017",
+          "2018",
+          "2019",
+          "2020"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+# Funksjon for å konvertere uttrekket til 2 dataframes, tar 2 paramtre
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_10638, df_id, ds = apiToDataframe(postUrl, apiQuery)
+#Index as år
+df_10638 = df_10638.set_index('år')
+#drop the second column
+df_10638 = df_10638.drop(df_10638.columns[[0, 1,2]], axis=1)
+
+#I get data from a csv
+kurs = pd.read_csv('https://data.norges-bank.no/api/data/EXR/A..NOK.SP?startPeriod=2003-03-19&endPeriod=2023-03-19&format=csv&bom=include&locale=no', sep=';')
+#I only look at rows with EURO
+kurs = kurs[kurs['BASE_CUR'] == 'EUR']
+#I look at years after 2010
+kurs = kurs[kurs['TIME_PERIOD'] >= 2010]
+#I drop everything after 2020
+kurs = kurs[kurs['TIME_PERIOD'] <= 2020]
+
+#Rename last column
+kurs = kurs.rename(columns={'OBS_VALUE': 'Årlig gjennomsnittlig kurs'})
+#I rename time_period to year
+kurs = kurs.rename(columns={'TIME_PERIOD': 'År'})
+#I set the index to year
+kurs = kurs.set_index('År')
+#i only keep the last column
+
+# Remove all columns between column index 1 to 3
+kurs.drop(kurs.iloc[:, 0:14], inplace=True, axis=1)
+kurs['Årlig gjennomsnittlig kurs'] = kurs['Årlig gjennomsnittlig kurs'].str.replace(',', '.')
+#I convert the column to float
+kurs['Årlig gjennomsnittlig kurs'] = kurs['Årlig gjennomsnittlig kurs'].astype(float)
+
+
+#I reset the index in df_10638
+df_10638 = df_10638.reset_index()
+#I reset the index in kurs
+kurs = kurs.reset_index()
+df_10638 = df_10638.join(kurs)
+
+df_10638 = df_10638.set_index('år')
+df_10638 = df_10638.drop(df_10638.columns[[1]], axis=1)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.set_ylabel('Millioner kroner', loc='center')
+ax.set_xlabel('År', loc='center')
+ax.spines['top'].set_color('none')
+ax.spines['right'].set_color('none')
+
+# Set the title and axis labels
+ax.set_title('Utlendingenes turistkonsum i Norge')
+#Adding text below the title
+ax.annotate('Målt i faste 2020-priser', xy=(0.38, 0.97), xycoords='axes fraction', fontsize=10)
+ax.annotate('Kilde: SSB Tabell 10638', xy=(0.78, -0.15), xycoords='axes fraction', fontsize=8)
+
+#I calculate the increase from 2010 to 2013
+increase_2013 = (df_10638.loc['2013', 'value'] - df_10638.loc['2010', 'value']) / df_10638.loc['2010', 'value'] * 100
+
+#I calcualte the increase from 2013 to 2017
+increase_2016 = (df_10638.loc['2016', 'value'] - df_10638.loc['2013', 'value']) / df_10638.loc['2013', 'value'] * 100
+
+
+#Setting bars on the x axis
+ax.bar(df_10638.index, df_10638['value'], color='#1B79AC', width=0.8)
+
+
+#i save the fig
+fig.savefig('Utlendingenes turistkonsum i Norge.png', dpi=500, bbox_inches='tight');
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.set_ylabel('Millioner kroner', loc='center')
+ax.set_xlabel('År', loc='center')
+ax.spines['top'].set_color('none')
+ax.spines['right'].set_color('none')
+ax.set_xlabel('')
+
+
+#I drop the year 2020
+df_10638 = df_10638.drop('2020')
+
+
+# Set the title and axis labels
+ax.set_title('Utlendingenes turistkonsum i Norge med EUR/NOK')
+#Adding text below the title
+ax.annotate('Målt i faste 2020-priser', xy=(0.38, 0.97), xycoords='axes fraction', fontsize=10)
+ax.annotate('Kilde: SSB Tabell 10638, og Norges Bank', xy=(0.74, -0.15), xycoords='axes fraction', fontsize=8)
+
+
+#I calculate the increase from 2010 to 2013
+increase_2013 = (df_10638.loc['2013', 'value'] - df_10638.loc['2010', 'value']) / df_10638.loc['2010', 'value'] * 100
+
+#I calcualte the increase from 2013 to 2017
+increase_2016 = (df_10638.loc['2016', 'value'] - df_10638.loc['2013', 'value']) / df_10638.loc['2013', 'value'] * 100
+
+#I calculate the increase from 2016 to 2019
+increase_2019 = (df_10638.loc['2019', 'value'] - df_10638.loc['2016', 'value']) / df_10638.loc['2016', 'value'] * 100
+
+
+#Setting bars on the x axis
+ax.bar(df_10638.index, df_10638['value'], color='#1B79AC', width=0.8)
+
+
+
+#draw a line between the top of 2010 and 2013 in the plot
+ax.annotate('', xy=(0, df_10638.loc['2010', 'value']+100), xytext=(3, df_10638.loc['2013', 'value']+100), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=0.2'))
+#write the text
+ax.annotate(f'Økning på {np.round(increase_2013, 2)}%', xy=(0.2, df_10638.loc['2013', 'value']+3000), fontsize=10)
+
+#draw a line between the top of 2013 and 2016 in the plot
+ax.annotate('', xy=(3, df_10638.loc['2013', 'value']+100), xytext=(6, df_10638.loc['2016', 'value']+100), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=0.2'))
+#write the text
+ax.annotate(f'Økning på {round(increase_2016, 2)}%', xy=(3.2, df_10638.loc['2016', 'value']-3500), fontsize=10, rotation=15)
+
+#draw a line between the top of 2016 and 2019 in the plot
+ax.annotate('', xy=(6, df_10638.loc['2016', 'value']+100), xytext=(9, df_10638.loc['2019', 'value']+100), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=0.1'))
+#write the text
+ax.annotate(f'Økning på {round(increase_2019, 2)}%', xy=(6.2, df_10638.loc['2019', 'value']-3300), fontsize=10, rotation=10)
+
+
+
+
+#I add a bar for the kurs
+ax2 = ax.twinx()
+ax2.set_ylabel('EUR/NOK', loc='center')
+ax2.spines['top'].set_color('none')
+#i drop the x axis label
+ax2.set_xlabel('')
+
+
+ax2.plot(df_10638.index, df_10638['Årlig gjennomsnittlig kurs'], color='red', linewidth=2, marker='o', markersize=5, markerfacecolor='white', markeredgecolor='red')
+
+#I calculate the increase from 2010 to 2013
+increase_2013_kurs = (df_10638.loc['2013', 'Årlig gjennomsnittlig kurs'] - df_10638.loc['2010', 'Årlig gjennomsnittlig kurs']) / df_10638.loc['2010', 'Årlig gjennomsnittlig kurs'] * 100
+
+#I calcualte the increase from 2013 to 2016
+increase_2016_kurs = (df_10638.loc['2016', 'Årlig gjennomsnittlig kurs'] - df_10638.loc['2013', 'Årlig gjennomsnittlig kurs']) / df_10638.loc['2013', 'Årlig gjennomsnittlig kurs'] * 100
+
+#draw a line between the top of 2010 and 2013 in the plot
+ax2.annotate('', xy=(0, df_10638.loc['2010', 'Årlig gjennomsnittlig kurs']), xytext=(3, df_10638.loc['2013', 'Årlig gjennomsnittlig kurs']), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=0.2'))
+#write the text
+ax2.annotate(f'Norske kroner ble {round(increase_2013_kurs*(-1), 2)}% dyrere', xy=(-0.5, df_10638.loc['2013', 'Årlig gjennomsnittlig kurs']+0.5), fontsize=9, color='white', bbox=dict(facecolor='black', edgecolor='black', boxstyle='round,pad=0.2'))
+
+#I draw a line between the top of 2013 and 2017 in the plot
+ax2.annotate('', xy=(3, df_10638.loc['2013', 'Årlig gjennomsnittlig kurs']), xytext=(6, df_10638.loc['2016', 'Årlig gjennomsnittlig kurs']), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=-0.2'))
+#write the text
+ax2.annotate(f'Norske kroner ble {round(increase_2016_kurs, 2)}%\nbilligere målt mot Euro', xy=(3.8, df_10638.loc['2016', 'Årlig gjennomsnittlig kurs']-1.8), fontsize=9, rotation=40, color='white', bbox=dict(facecolor='black', edgecolor='black', boxstyle='round,pad=0.2'))
+
+#I do the same for 2016-2019
+increase_2019_kurs = (df_10638.loc['2019', 'Årlig gjennomsnittlig kurs'] - df_10638.loc['2016', 'Årlig gjennomsnittlig kurs']) / df_10638.loc['2016', 'Årlig gjennomsnittlig kurs'] * 100
+
+
+#I draw a line between the top of 2016 and 2019 in the plot
+ax2.annotate('', xy=(6, df_10638.loc['2016', 'Årlig gjennomsnittlig kurs']), xytext=(9, df_10638.loc['2019', 'Årlig gjennomsnittlig kurs']), arrowprops=dict(arrowstyle='<->', color='black', linewidth=1, connectionstyle = 'arc3,rad=-0.3'))
+#write the text
+ax2.annotate(f'{round(increase_2019_kurs, 2)}% billigere', xy=(7, df_10638.loc['2019', 'Årlig gjennomsnittlig kurs']-0.8), fontsize=9, rotation=20, color='white', bbox=dict(facecolor='black', edgecolor='black', boxstyle='round,pad=0.2'))
+
+
+
+
+#I save the fig
+fig.savefig('Utlendingenes turistkonsum i Norge med kronekurs.png', dpi=500, bbox_inches='tight');
+
+```
+
+```{python}
+%%capture 
+
+postUrl = "https://data.ssb.no/api/v0/no/table/08403/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "agg_single:Fylker1972",
+        "values": [
+          "19",
+          "20"
+        ]
+      }
+    },
+    {
+      "code": "HotellFormal",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "03"
+        ]
+      }
+    },
+    {
+      "code": "ContentsCode",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "Overnattinger"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2012M01",
+          "2012M02",
+          "2012M03",
+          "2012M04",
+          "2012M05",
+          "2012M06",
+          "2012M07",
+          "2012M08",
+          "2012M09",
+          "2012M10",
+          "2012M11",
+          "2012M12",
+          "2013M01",
+          "2013M02",
+          "2013M03",
+          "2013M04",
+          "2013M05",
+          "2013M06",
+          "2013M07",
+          "2013M08",
+          "2013M09",
+          "2013M10",
+          "2013M11",
+          "2013M12",
+          "2014M01",
+          "2014M02",
+          "2014M03",
+          "2014M04",
+          "2014M05",
+          "2014M06",
+          "2014M07",
+          "2014M08",
+          "2014M09",
+          "2014M10",
+          "2014M11",
+          "2014M12",
+          "2015M01",
+          "2015M02",
+          "2015M03",
+          "2015M04",
+          "2015M05",
+          "2015M06",
+          "2015M07",
+          "2015M08",
+          "2015M09",
+          "2015M10",
+          "2015M11",
+          "2015M12",
+          "2016M01",
+          "2016M02",
+          "2016M03",
+          "2016M04",
+          "2016M05",
+          "2016M06",
+          "2016M07",
+          "2016M08",
+          "2016M09",
+          "2016M10",
+          "2016M11",
+          "2016M12",
+          "2017M01",
+          "2017M02",
+          "2017M03",
+          "2017M04",
+          "2017M05",
+          "2017M06",
+          "2017M07",
+          "2017M08",
+          "2017M09",
+          "2017M10",
+          "2017M11",
+          "2017M12",
+          "2018M01",
+          "2018M02",
+          "2018M03",
+          "2018M04",
+          "2018M05",
+          "2018M06",
+          "2018M07",
+          "2018M08",
+          "2018M09",
+          "2018M10",
+          "2018M11",
+          "2018M12",
+          "2019M01",
+          "2019M02",
+          "2019M03",
+          "2019M04",
+          "2019M05",
+          "2019M06",
+          "2019M07",
+          "2019M08",
+          "2019M09",
+          "2019M10",
+          "2019M11",
+          "2019M12"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_08403_1, df_id4, ds = apiToDataframe(postUrl, apiQuery)
+
+#I drop the first and second columns
+df_08403_1 = df_08403_1.drop(df_08403_1.columns[[1, 2]], axis=1)
+df_08403_1 = df_08403_1.set_index('måned')
+#I pivot the dataframe 
+df_08403_1 = df_08403_1.pivot(columns='region', values='value')
+#i sum the rows into a new column
+df_08403_1['Troms_og_finnmark'] = df_08403_1.sum(axis=1)
+#i drop the first 2 columns
+df_08403_1 = df_08403_1.drop(df_08403_1.columns[[0, 1]], axis=1)
+
+
+postUrl = "https://data.ssb.no/api/v0/no/table/08403/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "agg_single:Fylker2020",
+        "values": [
+          "18",
+          "54"
+        ]
+      }
+    },
+    {
+      "code": "HotellFormal",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "03"
+        ]
+      }
+    },
+    {
+      "code": "ContentsCode",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "Overnattinger"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2012M01",
+          "2012M02",
+          "2012M03",
+          "2012M04",
+          "2012M05",
+          "2012M06",
+          "2012M07",
+          "2012M08",
+          "2012M09",
+          "2012M10",
+          "2012M11",
+          "2012M12",
+          "2013M01",
+          "2013M02",
+          "2013M03",
+          "2013M04",
+          "2013M05",
+          "2013M06",
+          "2013M07",
+          "2013M08",
+          "2013M09",
+          "2013M10",
+          "2013M11",
+          "2013M12",
+          "2014M01",
+          "2014M02",
+          "2014M03",
+          "2014M04",
+          "2014M05",
+          "2014M06",
+          "2014M07",
+          "2014M08",
+          "2014M09",
+          "2014M10",
+          "2014M11",
+          "2014M12",
+          "2015M01",
+          "2015M02",
+          "2015M03",
+          "2015M04",
+          "2015M05",
+          "2015M06",
+          "2015M07",
+          "2015M08",
+          "2015M09",
+          "2015M10",
+          "2015M11",
+          "2015M12",
+          "2016M01",
+          "2016M02",
+          "2016M03",
+          "2016M04",
+          "2016M05",
+          "2016M06",
+          "2016M07",
+          "2016M08",
+          "2016M09",
+          "2016M10",
+          "2016M11",
+          "2016M12",
+          "2017M01",
+          "2017M02",
+          "2017M03",
+          "2017M04",
+          "2017M05",
+          "2017M06",
+          "2017M07",
+          "2017M08",
+          "2017M09",
+          "2017M10",
+          "2017M11",
+          "2017M12",
+          "2018M01",
+          "2018M02",
+          "2018M03",
+          "2018M04",
+          "2018M05",
+          "2018M06",
+          "2018M07",
+          "2018M08",
+          "2018M09",
+          "2018M10",
+          "2018M11",
+          "2018M12",
+          "2019M01",
+          "2019M02",
+          "2019M03",
+          "2019M04",
+          "2019M05",
+          "2019M06",
+          "2019M07",
+          "2019M08",
+          "2019M09",
+          "2019M10",
+          "2019M11",
+          "2019M12",
+          "2020M01",
+          "2020M02",
+          "2020M03",
+          "2020M04",
+          "2020M05",
+          "2020M06",
+          "2020M07",
+          "2020M08",
+          "2020M09",
+          "2020M10",
+          "2020M11",
+          "2020M12",
+          "2021M01",
+          "2021M02",
+          "2021M03",
+          "2021M04",
+          "2021M05",
+          "2021M06",
+          "2021M07",
+          "2021M08",
+          "2021M09",
+          "2021M10",
+          "2021M11",
+          "2021M12",
+          "2022M01",
+          "2022M02",
+          "2022M03",
+          "2022M04",
+          "2022M05",
+          "2022M06",
+          "2022M07",
+          "2022M08",
+          "2022M09",
+          "2022M10",
+          "2022M11",
+          "2022M12"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_08403_2, df_id4, ds = apiToDataframe(postUrl, apiQuery)
+#I drop the first and second columns
+df_08403_2 = df_08403_2.drop(df_08403_2.columns[[1, 2]], axis=1)
+df_08403_2 = df_08403_2.set_index('måned')
+df_08403_2 = df_08403_2.pivot(columns='region', values='value')
+
+#I insert df_08403_1 into df_08403_2
+df_08403_2.insert(0, 'Troms_og_finnmark', df_08403_1['Troms_og_finnmark'])
+
+#I replace all nan with 0
+df_08403_2 = df_08403_2.fillna(0)
+
+#I add the rows together and make a new column
+df_08403_2['Totalt'] = df_08403_2.sum(axis=1)
+
+#i convert to int 
+df_08403_2['Totalt'] = df_08403_2['Totalt'].astype(int)
+#I drop the first 3 columns
+df_08403_2 = df_08403_2.drop(df_08403_2.columns[[0, 1, 2]], axis=1)
+
+
+df_08403 = df_08403_2
+
+
+df_08403['year'] =df_08403.index.str[:4]
+#I set year as index
+df_08403 = df_08403.set_index('year')
+#I group by year and sum the values
+df_08403 = df_08403.groupby('year').sum()
+
+
+
+#i make a bar plot
+df_08403.plot(kind='bar', figsize=(8, 5.5), rot=0, title='Hotellovernattinger av turister i Nord-Norge', color='#1b79ac')
+
+#i add the totalts as text ontop of the bars
+for i, v in enumerate(df_08403['Totalt']):
+    plt.text(i, v + 1000, str(v), color='black', ha='center', fontsize=9
+    )
+
+#i remove the legend
+plt.legend().set_visible(False)
+
+#I add a label to the y-axis
+plt.ylabel('Antall overnattinger i millioner')
+
+#i add a label to the x-axis
+plt.xlabel('')
+
+plt.style.use('default')
+
+
+
+#kilde
+plt.text(-0.04, -0.04, 'Kilde: SSB.', ha='center', va='center', transform=plt.gca().transAxes, fontsize=9)
+
+
+plt.savefig('turisme.png', dpi=500, bbox_inches='tight');
+
+```
+
+```{python}
+%%capture 
+postUrl = "https://data.ssb.no/api/v0/no/table/13156/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "vs:Fylker2020",
+        "values": [
+          "18",
+          "54"
+        ]
+      }
+    },
+    {
+      "code": "ContentsCode",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "KapasitetRom",
+          "PrisRom",
+          "UtleigdeRom",
+          "LosjiOmsRom",
+          "LosjiOms"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2016M01",
+          "2016M02",
+          "2016M03",
+          "2016M04",
+          "2016M05",
+          "2016M06",
+          "2016M07",
+          "2016M08",
+          "2016M09",
+          "2016M10",
+          "2016M11",
+          "2016M12",
+          "2017M01",
+          "2017M02",
+          "2017M03",
+          "2017M04",
+          "2017M05",
+          "2017M06",
+          "2017M07",
+          "2017M08",
+          "2017M09",
+          "2017M10",
+          "2017M11",
+          "2017M12",
+          "2018M01",
+          "2018M02",
+          "2018M03",
+          "2018M04",
+          "2018M05",
+          "2018M06",
+          "2018M07",
+          "2018M08",
+          "2018M09",
+          "2018M10",
+          "2018M11",
+          "2018M12",
+          "2019M01",
+          "2019M02",
+          "2019M03",
+          "2019M04",
+          "2019M05",
+          "2019M06",
+          "2019M07",
+          "2019M08",
+          "2019M09",
+          "2019M10",
+          "2019M11",
+          "2019M12",
+          "2020M01",
+          "2020M02",
+          "2020M03",
+          "2020M04",
+          "2020M05",
+          "2020M06",
+          "2020M07",
+          "2020M08",
+          "2020M09",
+          "2020M10",
+          "2020M11",
+          "2020M12",
+          "2021M01",
+          "2021M02",
+          "2021M03",
+          "2021M04",
+          "2021M05",
+          "2021M06",
+          "2021M07",
+          "2021M08",
+          "2021M09",
+          "2021M10",
+          "2021M11",
+          "2021M12",
+          "2022M01",
+          "2022M02",
+          "2022M03",
+          "2022M04",
+          "2022M05",
+          "2022M06",
+          "2022M07",
+          "2022M08",
+          "2022M09",
+          "2022M10",
+          "2022M11",
+          "2022M12"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+
+# Funksjon for å konvertere uttrekket til 2 dataframes, tar 2 paramtre
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_13156, df_id, ds = apiToDataframe(postUrl, apiQuery)
+
+df_13156['region'] = df_13156['region'].str.replace('Nordland - Nordlánnda', 'Nordland')
+df_13156['region'] = df_13156['region'].str.replace('Troms og Finnmark - Romsa ja Finnmárku', 'Troms og Finnmark')
+test = df_13156
+
+df_13156['måned'] = df_13156['måned'].str.replace('M', '-')
+
+df_13156 = df_13156.set_index('måned')
+df_13156 = df_13156.pivot(columns=['region', 'statistikkvariabel'], values='value')
+
+#I add "Kapasitetsutnytting av rom (prosent)" in both regions together and divide by 2
+df_13156['Kapasitetsutnytting av rom (prosent)'] = (df_13156['Nordland', 'Kapasitetsutnytting av rom (prosent)'] + df_13156['Troms og Finnmark', 'Kapasitetsutnytting av rom (prosent)'])/2
+#I add pris per rom in both regions together and divide by 2
+df_13156['Pris per rom'] = (df_13156['Nordland', 'Pris per rom (kr)'] + df_13156['Troms og Finnmark', 'Pris per rom (kr)'])/2
+#I add "Utleigde rom" in both regions together
+df_13156['Utleigde rom'] = (df_13156['Nordland', 'Utleigde rom'] + df_13156['Troms og Finnmark', 'Utleigde rom'])
+#I add "Losjiomsetning per tilgjengeleg rom (kr)" in both regions together and divide by 2
+df_13156['Losjiomsetning per tilgjengeleg rom (kr)'] = (df_13156['Nordland', 'Losjiomsetning per tilgjengeleg rom (kr)'] + df_13156['Troms og Finnmark', 'Losjiomsetning per tilgjengeleg rom (kr)'])/2
+#I add "Losjiomsetning (kr)" in both regions together
+df_13156['Losjiomsetning (1 000 kr)'] = (df_13156['Nordland', 'Losjiomsetning (1 000 kr)'] + df_13156['Troms og Finnmark', 'Losjiomsetning (1 000 kr)'])
+#I drop the first 6 columns
+df_13156 = df_13156.drop(df_13156.columns[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], axis=1)
+#Nordnorge lagt sammen. gjennomsnitt av prosent, pris per rom og losjiomsetning per tilgjengelig rom
+
+
+
+
+#huffda nu kombinerer jeg 2016-2019, 2020-2021 og har en egen for 2022
+df_13156['year'] = df_13156.index.str[:-3]
+df_13156['Måned'] = df_13156.index.str[5:]
+df_13156['year'] = df_13156['year'].astype(int)
+df_13156['Måned'] = df_13156['Måned'].astype(int)
+
+#i filter out the rows starting with 2020 and add them to a new dataframe
+df_13156_1 = df_13156[df_13156['year'] >= 2020]
+df_13156_2 = df_13156_1[df_13156_1['year'] >= 2022]
+df_13156_1 = df_13156_1[df_13156_1['year'] < 2022]
+#I drop the rows starting with 2020
+df_13156 = df_13156[df_13156['year'] < 2020]
+
+
+df_13156_1 = df_13156_1.set_index(['Måned'])
+df_13156_1 = df_13156_1.groupby('Måned').mean()
+df_13156_1['year'] = '2020-2021'
+df_13156_2 = df_13156_2.set_index(['Måned'])
+#set year to string
+df_13156_2['year'] = df_13156_2['year'].astype(str)
+
+#Group by month and mean but ignore year column
+df_13156 = df_13156.groupby('Måned').mean()
+#I change all year values to year
+df_13156['year'] = '2016-2019'
+
+#I combine the two dataframes
+df_13156 = pd.concat([df_13156, df_13156_1, df_13156_2])
+df_13156 = df_13156.pivot_table(index=['Måned'], columns=['year'], values=['Kapasitetsutnytting av rom (prosent)', 'Pris per rom', 'Utleigde rom', 'Losjiomsetning per tilgjengeleg rom (kr)', 'Losjiomsetning (1 000 kr)'])
+
+
+#I make a subplot of kapasitet and utleiderom above eachother with ax1 and ax2
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5, 4))
+ax1.plot(df_13156.index, df_13156['Kapasitetsutnytting av rom (prosent)'])
+ax1.set_title('Kapasitetsutnytting av rom (prosent)')
+ax1.set_ylabel('')
+ax1.set_xlabel('')
+ax1.legend(df_13156['Kapasitetsutnytting av rom (prosent)'].columns, loc='upper left')
+ax1.spines['top'].set_visible(False)
+ax1.spines['right'].set_visible(False)
+#i set y ticks percent
+ax1.yaxis.set_major_formatter(mtick.PercentFormatter())
+
+
+ax2.plot(df_13156.index, df_13156['Utleigde rom'])
+
+#i move the title a little further down
+ax2.set_title('Antall utleide rom', y=0.9)
+ax2.set_ylabel('')
+ax2.set_xlabel('')
+ax2.spines['top'].set_visible(False)
+ax2.spines['right'].set_visible(False)
+
+
+
+
+#x axis month labels
+ax1.set_xticks(df_13156.index)
+ax1.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des'])
+ax2.set_xticks(df_13156.index)
+ax2.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des'])
+
+#ax1 legend labels
+ax1.legend(['2016-2019', '2020-2021', '2022'], loc='upper left', bbox_to_anchor=(0.45, 0.48), frameon=False)
+
+plt.savefig('kapasitet_utleide_rom.png', dpi=500, bbox_inches='tight')
+
+
+```
+
+```{python}
+%%capture 
+#i plot pris per rom
+fig, ax = plt.subplots(figsize=(5, 2.5))
+ax.plot(df_13156.index, df_13156['Pris per rom'])
+ax.set_title('Pris per rom')
+ax.set_ylabel('')
+ax.set_xlabel('')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+ax.yaxis.set_major_formatter(mtick.StrMethodFormatter('{x:.0f}kr'))
+
+
+
+#x axis month labels
+ax.set_xticks(df_13156.index)
+ax.set_xticklabels(['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Des'])
+#legend
+ax.legend(['2016-2019', '2020-2021', '2022'], loc='upper left')
+
+#kilde
+ax.text(0.8, 0.05, 'Kilde: SSB tabell 13156', ha='center', va='center', transform=ax.transAxes, fontsize=8)
+
+plt.savefig('pris_per_rom.png', dpi=500, bbox_inches='tight')
+```
+
+```{python}
+
+postUrl = "https://data.ssb.no/api/v0/no/table/13155/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "vs:Fylker2020",
+        "values": [
+          "18",
+          "54"
+        ]
+      }
+    },
+    {
+      "code": "HotellFormal",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "00",
+          "03"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2022M01",
+          "2022M02",
+          "2022M03",
+          "2022M04",
+          "2022M05",
+          "2022M06",
+          "2022M07",
+          "2022M08",
+          "2022M09",
+          "2022M10",
+          "2022M11",
+          "2022M12"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+  
+df_13155, df_id4, ds = apiToDataframe(postUrl, apiQuery)
+df_13155 = df_13155.set_index('måned')
+df_13155['region'] = df_13155['region'].str.replace('Nordland - Nordlánnda', 'Nordland')
+df_13155['region'] = df_13155['region'].str.replace('Troms og Finnmark - Romsa ja Finnmárku', 'Troms og Finnmark')
+df_13155 = df_13155.drop(df_13155.columns[[2]], axis=1)
+df_13155 = df_13155.pivot(columns=['region', 'formål med hotelloppholdet'], values='value')
+df_13155['Overnattinger i alt'] = df_13155.iloc[:, 0] + df_13155.iloc[:, 2]
+df_13155['Turisme'] = df_13155.iloc[:, 1] + df_13155.iloc[:, 3]
+df_13155 = df_13155.drop(df_13155.columns[[0, 1, 2, 3]], axis=1)
+#I make a new column where i subtract column 2 from 1
+df_13155['Overnattinger utenom turisme'] = df_13155['Overnattinger i alt'] - df_13155['Turisme'] 
+#and i drop the first column
+df_13155 = df_13155.drop(df_13155.columns[[0]], axis=1)
+
+def month_name(num):
+    return calendar.month_name[num]
+df_13155.index = df_13155.index.str.replace('2022M', '')
+df_13155.index = df_13155.index.astype(int)
+df_13155['month'] = df_13155.index
+df_13155['month_name'] = df_13155['month'].apply(month_name)
+df_13155['radians'] = df_13155['month'] * (2 * np.pi / 12)
+df_13155 = df_13155.drop(df_13155.columns[[2]], axis=1)
+
+```
+
+```{python}
+%%capture
+
+# Create a circular plot
+fig = plt.figure(figsize=(4, 4))
+ax = fig.add_subplot(111, projection='polar', theta_direction=-1)
+
+bars = ax.bar(df_13155['radians'], df_13155['Turisme'], width=np.radians(30), edgecolor='k', linewidth=1)
+
+# Remove the frame and spines of the polar plot
+ax.patch.set_visible(False)
+
+# Set the title and axis labels
+ax.set_title('Overnattinger med ferie formål', fontsize=14, y=1.1)
+
+ax.set_rlabel_position(15)
+ax.set_theta_zero_location('N')
+
+#I offset the theta to make january start at the top
+ax.set_theta_offset(np.radians(105))
+
+# Set the positions and labels for the ticks
+ticks = np.linspace(0, 2 * np.pi, 12, endpoint=False)
+ticklabels = df_13155['month_name']
+ax.set_xticks(ticks + np.radians(15))
+ax.set_xticklabels(ticklabels)
+
+# Moving the tick labels further away from the plot
+ax.xaxis.set_tick_params(pad=11) 
+
+# Set the color of the bars based on visitors
+colors = plt.cm.viridis(df_13155['Turisme'] / max(df_13155['Turisme']))
+for i, bar in enumerate(bars):
+    bar.set_facecolor(colors[i])
+
+#kilde
+ax.text(1, -0.1, 'Kilde: SSB', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+
+plt.savefig('Overnattinger_ferie.png', dpi=500, bbox_inches='tight')
+```
+
+```{python}
+%%capture
+postUrl = "https://data.ssb.no/api/v0/no/table/09266/"
+apiQuery = {
+  "query": [
+    {
+      "code": "Region",
+      "selection": {
+        "filter": "agg_single:Fylker1972",
+        "values": [
+          "18",
+          "19",
+          "20",
+          "21"
+        ]
+      }
+    },
+    {
+      "code": "Reiseliv",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "SUMRL"
+        ]
+      }
+    },
+    {
+      "code": "Tid",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2013",
+          "2014",
+          "2015",
+          "2016",
+          "2017",
+          "2018",
+          "2019"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "json-stat2"
+  }
+}
+
+# Funksjon for å konvertere uttrekket til 2 dataframes, tar 2 paramtre
+
+def apiToDataframe(postUrl, query):
+
+    # postUrl som spørringen skal postes mot
+    # Spørringen og endepunktet til API-et kan hentes fra Statistikkbanken.
+
+    res = requests.post(postUrl, json=query)
+    # legger resultat i ds. DS har i tillegg en del metadata
+    ds = pyjstat.Dataset.read(res.text)
+    # skriver resultatet til to dataframes
+    # først dataframe med tekst
+    df = ds.write('dataframe')
+    # deretter dataframe med koder
+    df_id = ds.write('dataframe', naming='id')
+    # returnerer også ds i tilfelle en trenger metadata
+    return df, df_id, ds
+
+df_09266, df_id, ds = apiToDataframe(postUrl, apiQuery)
+
+#I set year as index
+df_09266 = df_09266.set_index('år')
+
+#I drop columns 3
+df_09266 = df_09266.drop(df_09266.columns[[1, 2]], axis=1)
+
+#I pivot the dataframe taking region as columns and value as values
+df_09266 = df_09266.pivot(columns='region', values='value')
+#I drop svalbard
+df_09266 = df_09266.drop('Svalbard', axis=1)
+
+#I rename the columns
+df_09266.columns = ['Finnmark', 'Nordland', 'Troms']
+#i rearrange the columns
+df_09266 = df_09266[['Nordland', 'Troms', 'Finnmark']]
+#I plot the dataframe
+df_09266.plot(kind='bar', figsize=(10, 4), rot=0, title='Sysselsatte personer i reiselivsnæringene i Nord-Norge', color=['#1B79AC', '#8d8d1a', '#0E3F59'])
+
+#I set the x and y labels
+plt.xlabel('')
+plt.ylabel('Personer(1000)')
+
+#legend
+plt.legend(loc='best', ncol=4)
+
+#I add text 
+plt.text(5, -1, 'Kilde: SSB. Tabell 09266', fontsize=10)
+
+#I save the plot
+plt.savefig('sysselsetting.png', dpi=500, bbox_inches='tight')
+
+
+```
+
+```{python}
+%%capture  
+undata = pd.read_excel(r'https://data.un.org/Handlers/DocumentDownloadHandler.ashx?id=481&t=bin')
+#I only grab the rows for Norway
+undata = undata.iloc[5215:5250,:]
+#I replace all .. with na
+undata = undata.replace('..', np.nan)
+#and i drop the last column
+undata = undata.iloc[:,:-1]
+
+#I drop the first column and first row
+undata = undata.iloc[1:,1:]
+#And i drop the columns 4 and to 7
+undata = undata.drop(undata.columns[[5, 6, 7, 8, 9]], axis=1)
+
+arrivals = undata
+#I replace all NaN with nothing
+arrivals = arrivals.replace(np.nan, '')
+#i combine the first 4 columns
+arrivals['combined'] = arrivals[arrivals.columns[0:4]].apply(lambda x: ''.join(x.dropna().astype(str)), axis=1)
+#I drop the first 4 columns
+arrivals = arrivals.drop(arrivals.columns[[0, 1, 2, 3]], axis=1)
+#I set the combined column as index
+arrivals = arrivals.set_index('combined')
+#I drop all columns before 2012
+arrivals = arrivals.drop(arrivals.columns[0:15], axis=1)
+#i drop the first two rows
+arrivals = arrivals.iloc[2:,:]
+#i drop the rows after europe
+arrivals = arrivals.iloc[:9,:]
+
+#I make a new dataframe with only row 3
+cruise = arrivals.iloc[2:3,:]
+#I transpose the dataframe
+cruise = cruise.transpose()
+#i drop the last 2 rows
+cruise = cruise.iloc[:-2,:]
+cruise.columns = ['Dagsbesøkende fra cruise']
+
+#I drop rows after row 3
+arrivals = arrivals.iloc[4:10, :]
+arrivals = arrivals.transpose()
+
+#Senere prosjekt dersom jeg vil legge til UNWTO data. 
+```
+
+```{python}
+%%capture  
+#I plot cruise
+cruise.plot(figsize=(10, 5), linewidth=5, fontsize=20)
+plt.title('Dagsbesøkende fra cruise', fontsize=20)
+plt.ylabel('Antall i tusener', fontsize=20)
+#i add source
+plt.text(2017.6, 430, 'Kilde:UNWTO', fontsize=15)
+#remove the legend
+plt.legend().set_visible(False)
+plt.savefig('cruise.png', dpi=500, bbox_inches='tight');
+```
+
+```{python}
+%%capture
+
+#Henter tallene for Juni, Juli og August og september for nordnorge for antall utleide rom
+liste = (81725, 134593, 89579, 37353, 113123, 148979, 113260, 57043)
+#i take the average of the numbers
+gjennomsnitt = sum(liste)/len(liste)
+#divide it by 1000 to get it in thousands
+gjennomsnitt = gjennomsnitt/1000
+
+
+gjennomsnittpris = 900
+
+#setter symbols for regning
+a, b, p, t = sp.symbols('a b p t')
+
+# Define the functions
+Equation1 = a - (2.22 * p + t)
+Equation2 = b + p
+
+# Setting where supply and demand should meet
+intersection_x = gjennomsnitt
+intersection_y = 900
+
+# Substitute the intersection point into the equations
+equation_1_1 = Equation1.subs({p: intersection_x, t:0}) - intersection_y
+equation_2_2 = Equation2.subs({p: intersection_x, t:0}) - intersection_y
+
+# Solve the equations for a and b so get the values to put into the functions
+solution_a = sp.solve(equation_1_1, a)[0]
+solution_b = sp.solve(equation_2_2, b)[0]
+
+solution_a = float(solution_a)
+solution_b = float(solution_b)
+
+num = np.linspace(0.1, 100, 100)
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+#xlim
+ax.set_xlim(80, 100)
+ax.set_ylim(850, 975)
+
+
+def demand(p, t):
+    return solution_a - (2.22*p + t)
+
+def supply(p):
+    return solution_b + p
+
+
+p, t = sp.symbols('p t', real = True, positive = True)
+
+eq_1 = sp.Eq(demand(p, t), supply(p))
+
+pris_eq = sp.solve(eq_1, p)[0]
+kvantum_eq = demand(pris_eq, t)
+
+p_eq_fn=sp.lambdify((p, t), pris_eq)
+
+
+p_eq_fn_uten_avgift = p_eq_fn(0,0)
+p_eq_fn_med_avgift = p_eq_fn(0,50)
+
+
+x_eq_fn=sp.lambdify((p,t), kvantum_eq)
+
+x_eq_fn_uten_avgift = x_eq_fn(0,0)
+x_eq_fn_med_avgift = x_eq_fn(0,50)
+
+q = np.linspace(0.1,p_eq_fn_uten_avgift,150)
+
+
+ax.plot(num, demand(num, 0), label='Hotell etterspørsel', color='#6666FF')
+ax.plot(num, supply(num), label='Hotell tilbud', color='#FF8000')
+
+ax.hlines(x_eq_fn_uten_avgift,0,p_eq_fn_uten_avgift, color='black',ls='dashed', label="Likevekt")
+ax.vlines(p_eq_fn_uten_avgift,0,x_eq_fn_uten_avgift, color='black',ls='dashed')
+
+#I add a label to the intersection point
+ax.annotate('Markedslikevekt i hotellmarkedet \nuten turistskatt', xy=(p_eq_fn_uten_avgift, x_eq_fn_uten_avgift), xytext=(p_eq_fn_uten_avgift, x_eq_fn_uten_avgift+25), arrowprops=dict(facecolor='black', shrink=0.05), horizontalalignment='center', fontsize=12)
+
+#y axis end kr
+ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)) + 'kr'))
+
+ax.set_ylabel('Pris per hotellrom i NOK', loc='top')
+ax.set_xlabel('Antall utleide rom i tusen', loc='right')
+ax.legend(loc="upper right")
+
+plt.savefig('hotell_likevekt.png', dpi=500, bbox_inches='tight');
+
+
+ax.fill_between(q, x_eq_fn_uten_avgift, demand(q, 0), q, color = "green",alpha = 0.3,label='Konsumentoverskudd')
+ax.fill_between(q, supply(q), x_eq_fn_uten_avgift, color = "red",alpha = 0.3,label='Produsentoverskudd')
+ax.legend(loc="upper right")
+
+plt.savefig('hotell_overskudd.png', dpi=500, bbox_inches='tight');
+
+```
+
+```{python}
+%%capture
+
+x_num=np.linspace(0.1,100,100)
+q = np.linspace(0,p_eq_fn_uten_avgift,100)
+x_num=np.linspace(0.1,500,100)
+avgift=x_eq_fn_med_avgift-x_eq_fn_uten_avgift
+prod = 50-avgift
+
+#lag en akse
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+# plott funksjonen
+ax.plot(x_num, demand(x_num, 0), label='Etterspørsel')
+ax.plot(x_num, demand(x_num, 50), label='Etterspørsel med turistskatt')
+ax.plot(x_num, supply(x_num), label='Tilbud')
+
+
+
+
+
+# tittel
+ax.set_title('Markedslikevekt ved turistskatt på 50kr per hotellrom', loc='left')
+
+
+
+q2 = np.linspace(0,p_eq_fn_med_avgift,100)
+
+
+q3 = np.linspace(p_eq_fn_med_avgift,p_eq_fn_uten_avgift, 100)
+
+ax.fill_between(q3,supply(q3),demand(q3, 0), color = "black",alpha = 0.8,label='Dødvektstap') 
+
+
+
+ax.vlines(p_eq_fn_med_avgift,0,x_eq_fn_med_avgift, color='black',ls='dashed')
+
+ax.vlines(p_eq_fn_uten_avgift,0,x_eq_fn_uten_avgift, color='black',ls='dashed')
+
+ax.annotate(round(p_eq_fn_uten_avgift), xy=(round(p_eq_fn_uten_avgift, 2)-1, 793), annotation_clip=False)
+ax.annotate(round(p_eq_fn_med_avgift), xy=(round(p_eq_fn_med_avgift, 2)-1, 793), annotation_clip=False)
+
+#y axis end kr
+ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x)) + 'kr'))
+
+ax.set_ylabel('Pris per hotellrom i NOK', loc='top')
+ax.set_xlabel('Antall utleide rom i tusen', loc='right')
+ax.set_xlim(10, 100)
+ax.set_ylim(800, 1100)
+
+#I add the reduction p_eq_fn_uten_avgift-p_eq_fn_med_avgift
+ax.annotate('  Reduksjonen i antall rom solgt \n  per mnd er rundt '+str(round(1000*p_eq_fn_uten_avgift-p_eq_fn_med_avgift*1000)), xy=(100, 850))
+
+
+
+ax.fill_between(q2, demand(q2, 0), x_eq_fn_med_avgift+50, color = "green",alpha = 0.3,label='Konsumentoverskudd')
+ax.fill_between(q2, supply(q2), x_eq_fn_med_avgift, color = "red",alpha = 0.3,label='Produsentoverskudd')
+
+
+
+ax.fill_between(q2, demand(p_eq_fn_med_avgift, 0), x_eq_fn_med_avgift, color = "blue",alpha = 0.6,label='Avgiftsproveny')
+
+#I fill between etterspørsel og etterpørsel med skatt
+
+
+ax.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
+
+plt.savefig('hotell_med_turistskatt.png', dpi=500, bbox_inches='tight');
+
+
+
+
+
+#tallene for tabellen i bunnen kom fra koden her
+producer_surplus_uten_avgift=sp.integrate(x_eq_fn_uten_avgift-supply(p),(p,0,p_eq_fn_uten_avgift))
+producer_surplus_med_avgift=sp.integrate(x_eq_fn_med_avgift-supply(p),(p,0,p_eq_fn_med_avgift))
+consumer_surplus_uten_avgift=sp.integrate(demand(p, 0)-x_eq_fn_uten_avgift,(p,0,p_eq_fn_uten_avgift))
+consumer_surplus_med_avgift=sp.integrate(demand(p, 50)-x_eq_fn_med_avgift,(p,0,p_eq_fn_med_avgift))
+avgiftsproveny = sp.integrate(50, (p, 0, x_eq_fn_med_avgift)) 
+dødvektstap = sp.integrate(demand(p, 50) - supply(p), (p, p_eq_fn_med_avgift, p_eq_fn_uten_avgift)) 
+
+
+
+
+```
+
+\newpage
+
+# Kapittel 1 - Innledning
+
+## Bakrunn
+
+## Begrunnelse
+
+Begrunnelser for innføring er at Norge har hatt en stor økning i turisme og mange norske kommuner har idag mye turisme men med turisme så kommer det også utgifter. Som eksempel i form av:
+
+-   Søppel og avfallshåndering
+
+-   Fasiliteter som toaletter og stellerom
+
+-   Vedlikehold av infrastruktur for allmennbruk som gang/sykkelveier, skiløyper, stier osv
+
+-   Økt beredskap innen offentlige tjenester som helse/brann/politi
+
+-   Vedlikehold av turistattraksjoner
+
+Så ved å innføre en turistskatt så kan turistene bidra til finansiering av lokale tjenester og dekke større del av utgiftene de påfører. Turistskatten kan også dempe negative miljømessige og sosiale effekter og øke inntektene til lokale myndigheter.
+
+I mindre kommuner med lavt innbyggertall med mye turisme så vil de ha større problemer med å dekke utgifter som økning i utgifter til for eksempel avfalls håndtering.
+
+Samlet sett så kan innføring av turistskatt bidra til å skape en bærekraftig og ansvarlig turistindustri som balanserer økonomiske, sosiale og miljømessige hensyn.
+
+## Betydning
+
+En turistskatt på overnattinger er en avgift som pålegges turister som overnatter på hoteller, ferieboliger eller andre typer overnattingssteder. Formålet med denne avgiften er å bidra til finansieringen av lokale tjenester og tiltak som er spesielt rettet mot turister.
+
+Turistskatt kan variere i størrelse og kan beregnes enten som et fast beløp per person per natt, eller som en prosentandel av overnattings pris. Avgiften kan være inkludert i prisen for overnattingen eller kan betales separat ved utsjekking.
+
+En turistskatt er ikke det samme som MVA eller andre skatter på overnattinger.
+
+\newpage
+
+## Utbredelse
+
+Turistskatt på overnattinger er ganske utbredt i mange land og byer over hele verden. Det er imidertid ingen enhetlig tilnærming til innføring av turistskatt, og størrelsen, omfanget og formålet kan variere betydelig fra sted til sted. Norge har en form for turistskatt på Svalbard. Det er en så kalt "miljøavgift" på 150kr som alle som reiser til Svalbard må betale. [Svalbard miljøavgift](https://www.sysselmesteren.no/svalbards-miljovernfond/)
+
+I Europa så har turistskatt allerede vært implementert en del steder.
+
+1.  Amsterdam, Nederland: Amsterdam har en turistskatt på 7% av overnattingspris og 3EUR per natt på hotell. [Amsterdam turistskatt](https://www.amsterdam.nl/en/municipal-taxes/tourist-tax-(toeristenbelasting)/)
+
+2.  Roma, Italia: Roma har en turistskatt på 4-7EUR per person per natt for overnattinger på hotell. Avhengig av hotellets offisielle klassifisering. [Roma turistskatt](https://www.italyvacations.com/tourist-city-taxes-italy)
+
+3.  Paris, Frankrike: Paris har en turistskatt på mellom 0.25EUR-5EUR per person per natt, avhengig av overnattingsstedets kategori. [Paris turistskatt](https://en.parisinfo.com/practical-paris/money/tourist-tax)
+
+4.  Barcelona, Spania: Barcelona har en turistskatt på 2.75EUR til 5.25EUR avhengig av overnattingsstedets kategori. Dersom man kommer med cruiseskip så betaler men 4.75EUR dersom du er der i mer en 12 timer, og 2.75EUR hvis du er der i under 12 timer. [Barcelona turistskatt](https://atc.gencat.cat/es/tributs/ieet/quota-tributaria/)
+
+5.  Berlin, Tyskland: Berlin har en turistskatt på 5% av overnattings prisen per person per natt. [Berlin turistskatt](https://www.berlin.de/sen/finanzen/steuern/informationen-fuer-steuerzahler-/steuer-abc/information-berlin-hotel-occupancy-tax-150351.en.php)
+
+## Erfaringer
+
+Erfaringene med turistskatt varierer stort og det avhenger av størrelsen på avgiften, hvordan den er implementert og hva inntekten er brukt til.
+
+På Svalbard så har de samlet inn en miljøavgift siden 2007. Pengene som samles inn skal brukes til å beskytte miljøet på Svalbard og det tildeles årlig rundt 20 millioner kroner til diverse prosjekter. Nettsiden til fondet forteller at 1/3 går til forskning, 1/3 til bevaring av kulturminner og 1/3 til "ulike miljøverntiltak"[Kilde](https://www.miljovernfondet.no/om-svalbards-miljovernfond/). I sluttrapporten 2021 så var dette fondet på rundt 34million. [Kilde fond størrelse](https://www.miljovernfondet.no/wp-content/uploads/2022/04/Arsrapport-SMF-2021_-korrigert.pdf)
+
+Land som Bhutan har hatt problemer med overturisme og de har hatt turistbidrag på 200usd per natt for å hjelpe med kostnadene rundt turisme og for å redusere antallet turister som kommer.[Bhutan turistskatt](https://www.tripzilla.com/bhutan-tourist-tax-increase/136590)
+
+\newpage
+
+## Struktur i utredningen
+
+### Kapittel 1
+
+I Kapittel 1 gir jeg bakgrunnen for denne utredningen av de samfunnsøkonomiske konsekvensene av innføring av en turistskatt, begrunnelsen for dens innføring, hvor utbredt dette tiltaket er i andre land/byer, og hvilke erfaringer man har gjort med en turistskatt.
+
+### Kapittel 2
+
+I utredningen så starter vi med å se på turistnæringen i Norge med spesielt fokus på Nord-Norge. Jeg går igjennom hvordan konsumet til utenlandske turister er, når på året de kommer og jeg sier litt om hvordan hotell økonomien er. Dette inkluderer blant annet utviklingen av antall hotellovernattinger over tid, fordelingen av hvor hvilke verdensregioner turister kommer fra og økonomien til hotellene.
+
+Jeg går til slutt over hvorfor disse er relevante for kapittel 3.
+
+### Kapittel 3
+
+I Kapittel 3 gjennomfører jeg analyse av de samfunnsøkonomiske effektene av en turistskatt. Dette inkluderer formålet med å innføre en turistskatt,hvordan markedet fungerer uten en skatt, endringene som kan forventes etter at skatten blir innført, effektivitets- og fordelingseffekter av tiltaket,samt en vurdering av om formålet med tiltaket oppfylles. Jeg blir å fokusere på besøksbidrag på overnattinger på hotell.
+
+### Kapittel 4 konklusjon
+
+Og til slutt i Kapittel 4 oppsummerer jeg funnene fra analysen og gir råd til Nærings- og fiskeridepartementet.
+
+Ved å se på funnene i Kapittel 2 og 3 så bestemmer jeg meg for å anbefale å sette inn en turistskatt slik at vi kan generere inntekt og redusere antallet turister som ankommer Nord Norge.
+
+\newpage
+
+# Kapittel 2 - Turistnæringen i Norge
+
+## Turistkonsum
+
+I januar 2023 kunngjorde Nærings- og fiskeridepartementet at Regjeringen vil gi kommuner mulighet til å innføre besøksbidrag ellers kalt turistskatt. Av den grunnen så blir det nå gjort en utredning av de samfunnsøkonomiske konsekvenser av å innføre en slik turistskatt.
+
+Norge har hatt vekst i turisme i mange år. Hvert år før 2020 så hadde vi en økning i utenlendingens konsum i overnattingstjenester. Dette bidrar til verdiskapningen i Norge.
+
+Den økte turismen over tid har også bidratt til å lage nye arbeidsplasser som for eksempel i hotell, og bygging av nye hotell.
+
+```{=tex}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Utlendingenes turistkonsum i Norge.png}
+\caption{Turistkonsum 2010-2020}
+\end{figure}
+```
+Vi ser at utenlendingers turistkonsum i Norge har økt jevnt. Dette er målt i faste 2020-priser slik at vi ikke tar med inflasjon og endringer i priser. Men det vi kan se er at i 2013 så gikk økningen per år opp.
+
+I 2013 så startet den nåværende svekkelsen av den Norske krone. Dette gjør at for eksempel Europeiske turister som har Euro får flere kroner per Euro for hvert år som gikk.
+
+Ved å legge til kursforandring på Euro målt mot Krone så kan vi se at det er noe korrelasjon mellom kronekurs og turisme.
+
+\newpage
+
+### Kronekurs
+
+```{=tex}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Utlendingenes turistkonsum i Norge med kronekurs.png}
+\caption{Turistkonsum med kronekurs 2010-2019}
+\end{figure}
+```
+Vi ser her at under perioden 2013-2016 så var det en stor endring i prisen europeere betalte per krone. De gikk fra å få ca 7.5kr per euro til over 9 kroner. Det er selvfølgelig andre faktorer med men vi kan se at det er noe korrelasjon mellom prisnivå og turisme men at det bare var stor endring i hvor mye konsumet endret seg når kronekursen endret seg veldig mye.
+
+Vi ser på kursen til euro siden de fleste som besøker Norge og bruker minst en natt på hotell eller andre lignende overnattingsbedrifter er fra andre land i Europa.
+
+```{=tex}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\textwidth]{fordeling_overnattinger.png}
+\caption{Hotellovernattinger Nord-Norge fra utlandet med fordeling av land}
+\end{figure}
+```
+\clearpage
+
+```{=tex}
+\begin{wrapfigure}{r}{0.6\textwidth} 
+    \centering
+    \includegraphics[width=0.6\textwidth]{turisme.png}
+    \caption{Totale hotellovernattinger av alle turister}
+\end{wrapfigure}
+```
+## Turistutvikling og sesong
+
+I figuren her så har vi tatt med alle overnattinger med "Ferie, fritid" i Nord-Norge. Vi kan se at det har vært en økning i alle år. Siden vi har med norske turister så kan vi fremdeles se at det var mange overnattinger på hotell selv under korona pandemien. I årene etter 2013 så startet det en stor økning i antall overnattinger, vi kan igjen anta at en del av grunnen til denne store økningen er at kronekursen svekket seg og det ble billigere og komme på ferie. Norge er et land med høye priser på vanlig konsum i forhold til andre land så denne relative reduksjonen i pris for europeere kom turistnæringen godt.\
+\
+En svakhet med figurene vi ser på er at vi ikke kan skille på både utenlandske personer og turister generelt. Men dersom vi ser på når turist sesongen er og sammenligner den med når utenlandske overnattinger på hotell så ser vi at mønsteret er veldig likt, men at det kommer flere fra utlandet i løpet av vinter.\
+\
+\
+\
+I figurene her så har vi overnattinger i 2022 på hotell i Nord-Norge. Vi ser det er små forskjeller mellom overnattinger definert til turisme og utenlandske som kommer. Disse figurene viser at mesteparten av turismen skjer i sen sommer månedene.
+
+```{=tex}
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{polar_utlendinger.png}
+  \captionof{figure}{Mønster på utlendinger Nord-Norge}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{Overnattinger_ferie.png}
+  \captionof{figure}{Mønster på Nord-Norge ferie}
+\end{minipage}%
+\end{figure}
+```
+\clearpage
+
+```{=tex}
+\begin{wrapfigure}{R}{0.6\textwidth} 
+  \includegraphics[width=\linewidth]{kapasitet_utleide_rom.png}
+  \captionof{figure}{Kapasitet og utleide rom i Nord-Norge}
+  \smallskip\par
+  \includegraphics[width=\linewidth]{pris_per_rom.png}
+  \captionof{figure}{Pris per rom i Nord-Norge}
+\end{wrapfigure}
+```
+## Hotelløkonomien
+
+Hotellindustrien i Nord-Norge har gjort det godt. I figurene her så kan vi se at den kapasitets utnyttingen i hele Nord-Norge hvert år har holdt seg stabilt men at antall utleide rom har økt. Dette forteller oss at det har blitt bygd større kapasitet. Vi ser også at prisene har holdt seg stabile utenom korona og 2022 med prisøkningene men sysselsettingen har økt år for år som viser oss at hotellene har god økonomi.
+
+Vi ser at hotellene justerer prisene per rom over hele året og setter en høyere pris når det er mye turisme.
+
+En svakhet med alle disse figurene er at disse gir oss tall for fylkene og ikke i byer som Lofoten og Tromsø. Ved å se på tallene for hele Nord-Norge så kan det hende at enkeltsteder har ingen ledig kapasitet.
+
+```{=tex}
+\begin{figure}[b!]
+\centering
+\includegraphics[width=\textwidth]{sysselsetting.png}
+\caption{Sysselsetting i Nord-Norge}
+\end{figure}
+```
+\clearpage
+
+## Cruise
+
+```{=tex}
+\begin{wrapfigure}{r}{0.5\textwidth} 
+    \centering
+    \includegraphics[width=0.5\textwidth]{cruise.png}
+    \caption{Dagsbesøkende fra cruise}
+\end{wrapfigure}
+```
+Cruiseturisme har økt jevnt de siste årene i Norge. Det er mangel på data som jeg kan verifisere som skiller Nord-Norge og Sør-Norge så denne figuren viser Norge generelt. Det vi ser er at vi har de siste årene så har antallet som besøker Norge og blir der uten å overnatte økt veldig. Disse besøkene er av turister av andre nasjonaliteter. Landene disse turistene er fra er i hovedsak i Europa, lignende til figur 3 på side 7. Den nasjonaliteten som er størst her er Tyskland. [Kilde](https://cruise-norway.no/wp-content/uploads/2022/02/Cruise-calls-and-passenger-overview-2007-2019.pdf)\
+Kystverket har gitt Cruise-Norway denne statistikken men den er dessverre ikke blitt tatt vare på.
+
+## Hvorfor er dette viktig
+
+Vi tar med disse dataene når vi nå skal prøve å analysere hvilken effekt innføring av en turistskatt vil ha. Med inntrykket vi har fått om hvordan turismen har endret seg over årene og litt om hvordan turisme har endret seg etter pris endring så kan jeg på en bedre måte estimere effekten det vil ha dersom vi øker prisene ved å innføre en form for besøksbidrag.
+
+\clearpage
+
+# Kapittel 3 - Samfunnsøkonomiske effekter av en turistskatt
+
+## Formål
+
+Nord-Norge har hatt økende turisme men ved den økte turismen så har vi hatt en økning i kostnader. Vi har en turistsesong der majoriteten kommer i sen sommer månedene. Derfor bør en turistskatt ilegges høysesong tiden.
+
+Turister skaper også merkostnad for vedlikehold av infrastruktur for allmennsbruk som gang/sykkelveier, skiløyper, stier, informasjonstjenester som skilting osv. Bosatte kan oppleve at de må betale mer for vedlikehold siden turister sliter ned på løyper og veinett uten å dekke opp kostnaden selv.
+
+#### Små tettsted
+
+Små tettsted er spesielt utsatt for mangel på kapasitet i offentlige tjenester som brann/helse/politi. Siden turismen i stor grad er sesongbasert så er dette noe som er veldig vanskelig for kommuner og finansiere siden innbyggertallet kan være lavt men behovet stort pga turisme.
+
+Et eksempel på en økt utgift for bosatte i små tettsted er parkeringsplasser og fasiliteter som toaletter, venterom og stelle rom siden de må bygges for å møte etterspørselen til populasjonen men med turisme så kan denne kapasiteten bli brukt opp slik at det må bygges mer en populasjonen treng til eget forbruk.
+
+Mye turisme kan også lede til at prisene for goder går opp da den økte etterspørselen til varer leder til at større kvantum må bli bestilt for bedrifter som kan ha en høyere kostnad per enhet som gir de bosatte dårligere kjøpekraft.
+
+Uten en turistskatt så kan det være veldig vanskelig å få dekket denne merkostnaden som turistene skaper.
+
+#### Byer
+
+Mange av problemene små tettsted opplever vil også være i byer men byer kan til en større grad bli utsatt for endring i for eksempel boligpriser.
+
+I byer som Tromsø så kan turisme øke boligpriser i form av utleietjenester som "AirBNB" der du leier ut egen bolig. Dette har vist seg å være en god kilde til mer inntekt for mange som ender opp med å dekke store deler av sine utgifter til bolig ved å leie ut via korttidsutleie.
+
+Mange turistmål kan bli overfylt og lede til at det gir en dårligere opplevelse for både de som bor der og turistene.
+
+#### Inntekter
+
+Ved å sette en form for turistskatt så kan du hjelpe med å finansiere offentlige tjenester og bygge ut tilbud. Man kan bruke denne mer inntekten på å drive oppgraderinger av for eksempel kollektivtransport som da vil lede til et bedre tilbud for bosatte og turister.
+
+Vedlikehold av natur kan styrkes ved økt inntekt. Turisme leder til mye ekstra bruk av naturområder som slites av bruk, dersom turistene betaler for å vedlikehold så kan dette lede til bedre tilstand på naturen.
+
+Dersom flere kostnader dekkes av turisme så kan dette lede til mindre sosiale problemer fra turismen. Det kan bli redusert spenning mellom befolkning og turisme siden befolkning kan oppleve at deres bo områder bedres av turismen istedet for og potensielt oppleve nedsliting og kapasitetsproblemer på parker, busser osv.
+
+#### Redusert turisme
+
+Et formål ved innføring av en turistskatt kan også være at vi ønsker å få redusert antallet turister som kommer. Dette er spesielt relevant for områder som opplever økt turisme og de negative konsekvensene det kan medføre, slik som overbelastning av infrastruktur, miljøbelastning og ødeleggelse av kulturelle og historiske steder.
+
+Et eksempel på et slikt sted er Venezia i Italia, hvor den enorme tilstrømningen av turister har ført til utfordringer knyttet til bevaring av den unike kulturarven og miljøet i byen. For å håndtere dette har myndighetene innført en turistskatt, som både bidrar til inntekter for å ivareta disse verdiene, samt fungerer som en reguleringsmekanisme for å dempe antallet besøkende.
+
+Et annet eksempel er det lille landet Bhutan, som ligger i Himalaya mellom Kina og India. Bhutan har en streng turistpolitikk, som inkluderer høye turistskatter og begrensninger på antall turister som kan besøke landet hvert år. Dette gjøres for å beskytte landets sårbare økosystemer, kultur og tradisjonelle livsstil. Gjennom innføring av turistskatt har Bhutan klart å ivareta sin unike kultur og natur, samtidig som landet drar nytte av turistinntektene i en kontrollert og bærekraftig måte.
+
+\newpage\
+
+## Hotellmarkedet
+
+I kapittel 2 så vi at turisme har økt jevnt hvert år utenom korona pandemien. Kapasitet bygges etter hvor mye etterspørsel det har vært og vi har sett at priser for rom har økt over tid. I 2022 så har vi hatt en stor prisøkning og dette vises godt i prisen per rom i figur 8 men vi ser samtidig at kapasitets utnyttingen holdt seg normal selv ved de økte prisene.
+
+### Markedet i dag
+
+Hotellmarkedet har i dag ingen turistskatt så vi antar at vi da har da et marked der hotellrom blir solgt til den beste prisen for både hotell og de som overnatter. Vi har merverdiavgift og andre skatter men vi forenkler og tar disse for gitt.
+
+```{=tex}
+\begin{wrapfigure}{r}{0.5\textwidth} 
+    \centering
+    \includegraphics[width=0.5\textwidth]{hotell_likevekt.png}
+    \caption{Hotellmarkedet i dag i likevekt}
+\end{wrapfigure}
+```
+#### Markedsmekanismen
+
+Uten en skatt så antar vi at markedet fungerer i likevekt. Det vil si at det produseres like mange varer som det selges og at prisene er like for alle. I dette markedet så er det en etterspørselskurve og en tilbudskurve som møtes i likevekt. I figuren her så ser vi på gjennomsnittspris på hotellrom i Nord-Norge og antall rom solgt per måned i høysesongen. Markedet er i likevekt og at prisene er like for alle og maksimalt antall hotellrom blir produsert og solgt. Tilbudskurven starter på laveste pris produsent vil selge et hotellrom for. Dersom enda et hotellrom skal selges så vil det vises i figuren ved at man beveger seg langs x aksen, altså til høyre i figuren og for hvert hotellrom så går prisen opp med en enhet. På den andre siden så har vi etterspørselslinjen, den starter på det maksimale en konsument er villig til å betale, og for hver enhet som blir solgt så går prisen som konsumenten er villig til å betale nedover.
+
+```{=tex}
+\begin{wrapfigure}{l}{0.5\textwidth} 
+    \centering
+    \includegraphics[width=0.5\textwidth]{hotell_overskudd.png}
+    \caption{Samfunnsøkonomisk overskudd i dag i likevekt}
+\end{wrapfigure}
+```
+I midten så ser vi "Markedslikevekt" dette er da prisen der maksimalt antall hotellrom blir solgt for den beste prisen for begge parter. Alt over den horisontale linjen er overskudd for konsumenter, og alt under den er overskudd for produsenter. Alt til høyre for den linjen som går opp har priser der konsument og produsent ikke møtes og dermed blir ingen varer solgt videre.
+
+### Elasisitetsbegrepet
+
+I denne utredningen så blir vi å bruke begreper som "Elastisitet". Elastisitet er et nøkkelbegrep innen økonomi som beskriver hvordan en variabel, slik som etterspørsel eller tilbud, reagerer på endringer i en annen variabel, for eksempel pris eller inntekt. Det hjelper oss med å forstå hvordan kjøpere og selgere tilpasser seg endringer i økonomiske forhold.
+
+Priselastisitet er et spesifikt mål som indikerer hvor følsomme kjøpere og selgere er overfor endringer i pris. Det viser prosentvis endring i etterspørsel som følge av en prosentvis endring i pris. For eksempel, hvis vi ser på priselastisiteten for et produkt og finner at den er -0.5, betyr dette at hvis prisen øker med 1%, vil etterspørselen reduseres med 0,5%.
+
+Det er to hovedtyper av priselastisitet: elastisk og uelastisk. Uelastisk etterspørsel betyr at etterspørselen endrer seg lite i forhold til prisendringer. I vårt eksempel med en priselastisitet på -0.5, vil etterspørselen anses som uelastisk. På den annen side, hvis etterspørselen reduseres med mer enn 1% som svar på en 1% prisøkning, kalles dette elastisk etterspørsel, noe som indikerer at etterspørselen endrer seg betydelig i forhold til prisendringer.
+
+Selve helningen på etterspørselskurven kan gi oss informasjon om hvorvidt etterspørselen er elastisk eller uelastisk. Hvis etterspørselskurven er horisontal, er etterspørselen uendelig elastisk. Det betyr at en økning i pris på 1% resulterer i en tilnærmet 1% reduksjon i kvantum etterspurt. Hvis etterspørselskurven derimot er vertikal, er etterspørselen helt uelastisk, noe som innebærer at en 1% økning i pris ikke fører til noen endring i etterspurt kvantum.
+
+Ved å analysere priselastisitet i etterspørsel kan vi få verdifull innsikt i hvordan forbrukere reagerer på prisendringer, samt hvordan produsenter og selgere kan justere prisene sine for å maksimere inntektene.
+
+### Forventede endringer
+
+I figur 2 så vi at når kronen ble veldig mye billigere så var det en økning i utenlanske turister. Det forteller oss at turismen er sensitiv til prisendringer. Så vi forventer at dersom vi innfører en form for besøksbidrag så vil dette betyr at antallet turister går mer ned en det vi tjener. Vi vil ikke bruke den figuren til å prøve å estimere elasisiteten til etterspørselen til turisme. [Ida Charlotte Sølvberg Engebretsen](https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2486498/Masteroppgave%20Ida%20Charlotte%20Engebretsen.pdf) har skrevet en masteroppgave der de undersøker hvordan priselasisiteten er på etterspørsel.
+
+Det man kommer frem til der er at priselasisiteten på relativpris på turistkonsum er på -0.6 på kort sikt og -2.86 på lang sikt. Dette vil si at på kort sikt så vil en endring i pris ha liten effekt men på lang sikt så vil det ha stor effekt. Siden dette er relativpris på turistkonsum så vil ikke vi se en så stor effekt da turistkonsum ikke bare går til hotellovernattinger. [Innovasjon Norge](https://assets.simpleviewcms.com/simpleview/image/upload/v1/clients/norway/Regionsrapport_for_Nord_Norge_TU2019_83081dea-c654-4909-9370-ae84e0e66d03.pdf) utfører turistundersøkelser og jeg ser på 2019 siden dette er den siste rapporten de har lagd der de kartlegger utlendinger. Jeg blir å fokusere på effekten på lang sikt siden jeg antar at formålet med turistskatten er at turister skal dekke større del av utgifter selv. Siden vi ser at turister bruker rundt 1160kr per dag i 2019 så tar vi gjennomsnittlig pris på hotellrom i høysesongen i 2019 på ca 900kr. Siden 900 er 77.6% av det døgnforbruket så blir jeg å bruke 77.6% av -2.86 som gir meg en pris elasisitet på -2.22. Dette vil si at etterspørselen er veldig priselastisk som gjenspeiles i figur 2 fra kapittel 2.
+
+Når man øker prisen ved form av en skatt eller avgift så vil man da altså få et "Dødvektstap". Det er den samfunnsøkonomiske kostnaden ved å innføre en slik type "kjile" mellom etterspørselen og tilbudet. Vi ser i den neste figuren at dette viser seg i en reduksjon i antall overnattinger.
+
+#### Norge som luksusgode
+
+Det vi ser i figuren er at en innføring av en turistskatt på 50kr per natt vil lede til en reduksjon på rundt 15500 overnattinger per måned i Nord-Norge. Dersom vi har som formål å redusere antallet turister så er dette da et veldig godt tiltak. Det er vel å merke at vi har gjort et anslag på lang sikt der vi antar at den stor andel av forbruket til turister går i hotellrom. Dette er en svakhet med denne figuren og derfor bør ikke tall tas med så stor vekt.
+
+Som vi kan se så er det store mengder avgiftsproveny. For regionen Nord-Norge så ligger dette på rundt 4 million kroner i måneden dersom vi innfører en skatt på 50kr. I dette tilfellet så tenker vi at turistene er svært prissensitiv noe som ikke nødvendigvis gjenspeiler seg som her. Dersom vi antar at de bruker 300kr per natt til overnattinger som Innovasjon Norge sin rapport kom med så vil den elasisiteten ligge på et område rundt -0.95 men jeg har valgt og ikke se så mye på det siden det er under den laveste gjennomsnittsprisen for hotellovernattinger i regionen.
+
+\newpage
+
+```{=tex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{hotell_med_turistskatt.png}
+\caption{Den samfunnsøkonomiske kostnaden ved å innføre en turistskatt på 50kr per overnatting.}
+\end{figure}
+```
+|                           | Før avgift      | Etter avgift    | Endring (Etter avgift - før avgift)    |
+|-----------------|---------------|---------------|-------------------------|
+| Konsumentpris             | 900             | 934.47kr        | 34.47kr                                |
+| Produsentpris             | 900             | 884.47          | -15.53kr                               |
+| Kvantum                   | 96960 rom solgt | 81430 rom solgt | Reduksjon på 15530 rom solgt per måned |
+| Konsumentoverskudd        | 10434 Millioner | 7360 Millioner  | -3075 Millioner                        |
+| Produsentoverskudd        | 4700 Millioner  | 3315 Millioner  | -1385 Millioner                        |
+| Samfunnsøkonomisk gevinst | 15135 Millioner | 10675 Millioner | -4460 Millioner                        |
+| Avgiftsproveny            | 0               | 44224600        | 44224600                               |
+| Dødvektstap               | 0               | -388 Millioner  | -388 Millioner                         |
+
+I figuren så kan vi se at den innføringen av turistskatt demper etterspørselen og det vises i den nye oransje linjen. På høyre side i figur så har vi nå et stort mørkt område som kalles "Dødvekstap". Det kommer ut av at det nå blir å være en redusert andel med rom som leies ut og da mister alle konsumenter og produsenter det overskuddet som ville kommet dersom de beholdte den originale likevekten.
+
+\newpage
+
+#### Effekten på turisme
+
+Ved å innføre en turistskatt så vil vi få redusert antallet turister som kommer til Nord-Norge. Vi vil få innkrevd en stor del med skatt fra turistene som vi da kan bruke til å dekke utgiftene de gir. Figurene vi har brukt tar Nord Norge som en region og det vi ser er at turister er veldig prissensitiv og en avgift vil føre til at de velger andre destinasjoner som Nord Sverige eller Finland osv. Ved å bruke denne inntekten på å betale utgiftene til turisme så vil vi da redusere inntekten til hoteller og andre overnattingssteder men vi fordeler ut denne inntekten til samfunnet.
+
+Innføringen av en turistskatt i Nord-Norge har som mål å redusere antallet turister som besøker regionen, samtidig som den genererer inntekter som kan brukes til å dekke utgiftene forbundet med turisme.
+
+Min analyse viser at turister generelt er prissensitive, og innføringen av en turistskatt vil sannsynligvis påvirke deres valg av reisemål. Nord-Norge vil konkurrere med andre nordlige destinasjoner, som Nord-Sverige og Finland, som kan bli foretrukket av turister som ønsker å unngå å betale skatten.
+
+\clearpage
+
+# Kapittel 4: Konklusjon
+
+Turistskatt er utbredt i mange deler av verden og er nødvendig i Nord-Norge for å redusere antall turister. Bortsett fra årene med Koronapandemi, har turismen økt jevnlig. Ved å innføre turistskatt, kan veksten bremses eller til og med redusere antall turister i Nord-Norge årlig. Dette kan imidlertid påvirke sysselsettingen, ettersom færre turister fører til lavere etterspørsel etter guider, hoteller og lignende, noe som kan ha en skjev innvirkning på unge arbeidstakere.
+
+Høysesongen for turisme er fra juni til september, så turistskatten bør innføres i disse månedene for å minske negative effekter og spre turisttrafikken utover året. Det er også nødvendig å kartlegge de faktiske kostnadene knyttet til turisme, ettersom det mangler data om dette.
+
+Cruiseturisme bør også vurderes. Dagsbesøkende fra cruiseskip blir ikke rammet av en overnattingsbasert turistskatt, så det kan vurderes å innføre en avgift på cruiseskip eller deres passasjerer.
+
+Turistskatt er nødvendig på grunn av den store økningen i turisme og de tilhørende utgiftene som ikke er dekket. Skader på naturen krever vedlikehold, og en turistskatt vil både generere inntekter og redusere antall turister som bidrar til slik skade. Det er essensielt at inntektene fra turistskatten brukes til prosjekter relatert til turisme og de kostnadene det medfører, samt eventuelle nye tilbud i områdene hvor skatten samles inn.
+
+Det er viktig å erkjenne at en reduksjon i antall turister og innføring av turistskatt kan ha negative konsekvenser for hoteller og overnattingssteder. For å kompensere, kan inntektene fra turistskatten fordeles på en måte som støtter det lokale næringslivet og samfunnet, for eksempel gjennom tiltak som fremmer bærekraftig turisme og styrker lokale bedrifter.
+
+Totalt sett vil innføringen av en turistskatt i Nord-Norge bidra til å redusere turistbelastningen og generere inntekter for å håndtere økonomiske og miljømessige utfordringer knyttet til turisme. Det blir viktig å finne en balanse mellom å opprettholde regionens attraktivitet som turistmål og å ivareta behovene til lokalbefolkningen og miljøet.
+
+```{=tex}
+\clearpage
+\twocolumn
+```
+# Kilder og referanser:
+
+<https://www.unwto.org/tourism-statistics/tourism-statistics-database)>
+
+<https://www.ks.no/contentassets/841f207634274bed8ec9ecfc753074b9/finansiering-av-berekraftige-reisemal.pdf>
+
+<https://www.europarl.europa.eu/cmsdata/130660/The%20Impact%20of%20Taxes%20on%20the%20Competitiveness%20of%20European%20tourism.pdf>
+
+<https://assets.simpleviewcms.com/simpleview/image/upload/v1/clients/norway/Regionsrapport_for_Nord_Norge_TU2019_83081dea-c654-4909-9370-ae84e0e66d03.pdf>
+
+<https://ntnuopen.ntnu.no/ntnu-xmlui/bitstream/handle/11250/2486498/Masteroppgave%20Ida%20Charlotte%20Engebretsen.pdf>
+
+<https://www.sysselmesteren.no/svalbards-miljovernfond/>
+
+<https://www.miljovernfondet.no/om-svalbards-miljovernfond/>
+
+<https://www.miljovernfondet.no/wp-content/uploads/2022/04/Arsrapport-SMF-2021_-korrigert.pdf>
+
+<https://www.amsterdam.nl/en/municipal-taxes/tourist-tax-(toeristenbelasting)/>
+
+<https://www.italyvacations.com/tourist-city-taxes-italy>
+
+<https://en.parisinfo.com/practical-paris/money/tourist-tax>
+
+<https://atc.gencat.cat/es/tributs/ieet/quota-tributaria/>
+
+<https://www.berlin.de/sen/finanzen/steuern/informationen-fuer-steuerzahler-/steuer-abc/information-berlin-hotel-occupancy-tax-150351.en.php>
+
+<https://www.tripzilla.com/bhutan-tourist-tax-increase/136590>
+
+<https://cruise-norway.no/wp-content/uploads/2022/02/Cruise-calls-and-passenger-overview-2007-2019.pdf>
+
+<https://www.norges-bank.no/tema/Statistikk/Valutakurser/>
+
+<https://www.ssb.no/>
+
+<https://www.ssb.no/en/natur-og-miljo/artikler-og-publikasjoner/_attachment/454081>

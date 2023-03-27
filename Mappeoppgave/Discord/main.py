@@ -23,7 +23,7 @@ last_match = None  # Initialize last_match to None to indicate that no matching 
 async def post_new_row(row):
     # Define a function to post the new row to Discord
     channel = bot.get_channel(1065637170708222052)  # ID of the Discord channel where it posts
-    await channel.send(f"God dag god dag studentan \nNy oppgave i Sok-1005! Skriv !check \n\nKindly")
+    await channel.send(f"God dag god dag studentan \nNy oppgave i Sok-1005! Skriv !check for å tvinge meg til å sjekke igjen \n{row} \n\nKindly")
 
 async def check_course_plan():
     global last_match  # Access the global last_match variable
@@ -57,13 +57,15 @@ async def check_course_plan():
     latest_match = None
     for row in rows:
         if any("task" in value.lower() or "assignment" in value.lower() or "deadline" in value.lower() for value in row.values()):
-            latest_match = f"{row['Date']} {row['Session']} {row['Topics/Resources']}"
+            latest_match = f"{row['Date']} {row['Session']}\n\n{row['Topics/Resources']}"
+
 
     if latest_match and latest_match != last_match:
         # If a new matching row has been found, and it is different from the last known matching row,
         # then assume that a new row has been added and return it
         last_match = latest_match  # Update the last_match variable to the latest matching row
         await post_new_row(latest_match) # Post the new row to Discord
+        await asyncio.sleep(10) # Wait for 10 seconds to ensure the message is sent before sending the result
         return latest_match
     
     # If no new matching row has been found, return None
@@ -73,7 +75,7 @@ async def periodic_check():
     while True:
         print('Checking course plan...')
         await check_course_plan() # Wait for the result of check_course_plan()
-        await asyncio.sleep(60 * 5)  # Wait for 5 minutes before checking again
+        await asyncio.sleep(60 * 60)  # Wait for 5 minutes before checking again
   
         
 
@@ -82,20 +84,34 @@ async def start_periodic_check():
     asyncio.create_task(periodic_check())
 
 
+
+@bot.event
+async def on_ready():
+    print('Bot is ready')
+    await start_periodic_check()
+
+
+
+
+
 # Define a command to check the course plan and post the result to Discord
 @bot.command(name='check')
 async def check_command(ctx):
     print('Received check command from', ctx.author.name)
     result = await check_course_plan()  # Await the result of check_course_plan()
     if result:
-        await ctx.send(f"God dag god dag studentan \n\nNy oppgave i Sok-1005:\n{result}\n\nKindly")
+        await ctx.send(f"God dag god dag studentan \n\nNy oppgave i Sok-1005:\n\n{result}\n\nKindly")
     else:
         # Check if the last_match variable has been set to a non-None value
         if last_match is not None:
-            await ctx.send("God dag, God dag studentan \n\n Ikke noe nytt arbeid.\n\nKindly")
+            await ctx.send("God dag, God dag studentan \n\nIkke noe nytt arbeid.\n\nSiste oppgave som kom: \n" + last_match + "\n\n\nKindly")
+        else:
+            await ctx.send("God dag, God dag studentan \n\nIngen arbeid funnet.\n\nKindly")
+
+
 
 @bot.command(name='kindly')
-async def help_command(ctx):
+async def kindly_command(ctx):
     print('Received kindly command from', ctx.author.name)
     await ctx.send("God dag, God dag studentan \n\nSjekk nettsiden selv da.\n\nKindly")
 
@@ -124,24 +140,54 @@ async def shitbot_command(ctx):
 @bot.command(name="fuckyouup")
 async def fuckyouup_command(ctx):
     print('recieved repeat command from', ctx.author.name)
-    await ctx.send("Gå å jobb med mappeoppgaven. jævla latkuk.\n\n\nKindly")
+    await ctx.send("Slutt å tull. Gå å jobb med mappeoppgaven.\n\n\nKindly")
 
 
 @bot.command(name='ping')
-async def ping_command(ctx, user: discord.Member):
+async def ping_command(ctx, name: str):
     print('Received ping command from', ctx.author.name)
-    await ctx.send(f'{user.mention}, Get pinged bitch \n\n\nKindly.')
+    for member in ctx.guild.members:
+        if name.lower() in member.name.lower():
+            await ctx.message.delete()
+            await ctx.send(f'{member.mention}, Get pinged bitch \n\n\nKindly.')
+            return
+
+@bot.command(name='skitur')
+async def skitur_command(ctx):
+    print('Received skitur command from', ctx.author.name)
+    await ctx.send(f'Ronmayer og linerider365(uten stor bokstav) er på skitur \n\n\nKindly.')
 
 
 @bot.command(name="source")
 async def source_command(ctx):
     print('received source command from', ctx.author.name)
+    gif_url = "https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831"
     embed = discord.Embed(title="Koden til botten ligger på repoet dere sikkert allerede sjekker daglig",
                           url="https://github.com/Danieljoha/Sok-1006/tree/main/Mappeoppgave/Discord",
                           description="Kom å stjel koden min jævla kuka",
                           color=discord.Color.blue())
-    embed.set_thumbnail(url="https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831")
+    embed.set_thumbnail(url=gif_url)
+    await ctx.send(gif_url)
     await ctx.send(embed=embed)
+
+
+@bot.command(name='commands')
+async def list_commands(ctx):
+    command_list = []
+    for command in bot.commands:
+        command_list.append(command.name)
+    response = "Vi får vel se om du er smart nok til å lese:\n!"
+    response += "\n!".join(command_list)
+    await ctx.send(response)
+
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send("Fy faen du e dum du, ta å skriv '!commands'")
+
+
 
 
 # Run the Discord bot using the token from the environment variable
