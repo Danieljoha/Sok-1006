@@ -170,6 +170,18 @@ async def source_command(ctx):
     await ctx.send(gif_url)
     await ctx.send(embed=embed)
 
+@bot.command(name="fasit")
+async def fasit_command(ctx):
+    print('received fasit command from', ctx.author.name)
+    gif_url = "https://tenor.com/view/i-am-a-generous-god-xerxes-300-youre-welcome-gif-19690831"
+    embed = discord.Embed(title="Fasiten ligger her, men dere har vel allerede nettsiden bookmarket",
+                          url="https://github.com/Danieljoha?tab=repositories",
+                          description="Huff, jeg er så generøs",
+                          color=discord.Color.blue())
+    embed.set_thumbnail(url=gif_url)
+    await ctx.send(gif_url)
+    await ctx.send(embed=embed)
+
 
 @bot.command(name='commands')
 async def list_commands(ctx):
