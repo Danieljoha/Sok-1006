@@ -2106,7 +2106,7 @@ Jeg ser på SSB at nordmenn gjennomsnittlig bruker ca 15%[^14] av sin inntekt p�
 
 I \autoref{table:1} så tar jeg rushtid kostnaden på 14.4kr i rush og 9.6kr utenom for nullutslippskjøretøy, og 28.8kr i rush og 9.6kr utenom rush for biler med forbrenningsmotor.
 
-Siden jeg går ut ifra at alle billister kjører 2 ganger dagen igjennom bomringen så tar jeg å deler gjennomsnittlig kjørelengde for hver biltype på 365 for å få pris per dag og med dette kan jeg beregne pristillegg for de forskjellige scenarioene ved å gange inn de forskjellige prisene på bompasseringer. $\frac{Gjennomsnittlig\>kjørelengde}{365} = Daglig\>kjørte\>kilometer$ og for elbiler blir dette da $\frac{11334}{365}\approx 31km \> daglig$
+Siden jeg går ut ifra at alle billister kjører 2 ganger dagen igjennom bomringen så tar jeg å deler gjennomsnittlig kjørelengde for hver biltype på 365 for å få pris per dag og med dette kan jeg beregne pristillegg for de forskjellige scenarioene ved å gange inn de forskjellige prisene på bompasseringer. $\frac{\textnormal{Gjennomsnittlig kjørelengde}}{365} = \textnormal{Daglig kjørte kilometer}$ og for elbiler blir dette da $\frac{11334}{365}\approx 31km \> daglig$
 
 $Scenario\>1\>pris\>per\>kilometer\>= \> (\frac{14.4\cdot 2}{31})\cdot0.3 + (\frac{9.6\cdot2}{31})\cdot0.7 \approx 0.49kr$
 
