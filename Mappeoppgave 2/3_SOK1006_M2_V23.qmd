@@ -2632,9 +2632,9 @@ Som vi har sett i Kapittel 1 så var et av formålene å ha nullvekst i biltrafi
 
 I kapittel 3 så viser jeg at bilistene, uansett hvordan de tilpasser seg, opplever en reduksjon i kjørte kilometer. Dette er spesielt tydelig i \autoref{fig:fig15c}. Dette er da bil med forbrenningsmotor i scenario 2 der all kjøring skjer i rushtiden. I alle scenarioer selv med et kompensert budsjett så er det en reduksjon i kjørte kilometer og en reduksjon i penger brukt på andre goder, da den økte kostnaden går til bompenger.
 
-I løpet av de siste 5 årene så kan vi se at antall elbiler har økt. Dersom økningen vi ser i \autoref{fig:fig7} fortsetter og elbiler beholder rabatten som vi så i \autoref{table:1} så kan det hende at denne rabatten må omtenkes på sikt dersom alle prosjektene skal finansieres ved hjelp av bompenger.
+I løpet av de siste 5 årene så kan vi se at antall elbiler har økt. Dersom økningen vi ser i \autoref{fig:fig7} fortsetter og elbiler beholder rabatten som vi så i \autoref{table:1} så kan det hende at denne rabatten må omtenkes på sikt dersom alle prosjektene skal finansieres i like stor grad som i dag ved hjelp av bompenger.
 
-I konklusjon kan vi se at innføringen av bompenger har en betydelig effekt på bilistenes atferd. Det kan bidra til å redusere biltrafikken og øke inntektene til myndighetene. Siden vi også kan se at det er en økning i antall elbiler så kan det hende at inntekten fra bomringen viser seg å komme under målet og det på sikt må endres i rabattordningene. Vi har hatt en økning i busspåstigninger og syklister så dette kan være bra for miljøet og også kanskje gi en samfunnsøkonomisk gevinst i reduksjon av svevestøv og bedre fysisk helse blandt syklister. Det kan dermed være nødvendig med å investere mer i kollektiv transport og bygge flere sykkelveier.
+Konklusjonen er da at vi kan se at innføringen av bompenger har en betydelig effekt på bilistenes atferd. Det kan bidra til å redusere biltrafikken og øke inntektene til myndighetene. Siden vi også kan se at det er en økning i antall elbiler så kan det hende at inntekten fra bomringen viser seg å komme under målet og det på sikt må endres i rabattordningene. Vi har hatt en økning i busspåstigninger og syklister så dette kan være bra for miljøet og også kanskje gi en samfunnsøkonomisk gevinst i reduksjon av svevestøv og bedre fysisk helse blandt syklister. Det kan dermed være nødvendig med å investere mer i kollektiv transport og bygge flere sykkelveier.
 
 Det er viktig å huske at vi denne oppgaven er skrevet under et halvt år etter innføringen av bompenger og at det kan være mange faktorer som har innvirkning. Det har nå vært høy inflasjon og renteøkninger som kan ha bidratt til å redusere trafikken.
 
@@ -2691,3 +2691,9 @@ Ved å sette teksten jeg hadde inn i Chatgpt og be den bedre struktur i teksten 
 \subsection{KI tabell 3 og 4 bruk se S22 appendix}
 
 Ved konstruering av tabell 3 og 4 så hadde jeg lagt disse i Markdown men dette viste seg å ikke kunne se bra ut i PDF. Jeg spurte så ChatGPT om hjelp, den mente så at det ikke var noe latex support og den ba meg fylle verdier selv men den ga meg ide om å se etter noe i IPython.display der jeg fant Latex. ChatGPT fortalte meg om at jeg måtte ha dobbel {{}} rundt verdier, dette var feil men det trengtes for latex kommandoer.
+
+
+```{=tex}
+\section {Appendix Kapittel 4 KI bruk} \label{appendix:appendix4}
+```
+I Kapittel 4 så har jeg i svært liten grad brukt KI. Jeg prøvde originalt å sette pdf'en i chatgpt å be den konkludere for meg men den begynte å halisunere ut ting som ikke var sant så jeg endte med å skrive konklusjonen selv men jeg har postet den i ChatGPT og bedt den forbedre og brukt det den ga ut til å selv skrive om på teksten. 
